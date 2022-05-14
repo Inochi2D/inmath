@@ -1,11 +1,8 @@
-Gl3n
+Inochi2D Math
 ====
 
-
-[![Build Status](https://travis-ci.org/Dav1dde/gl3n.svg?branch=master)](https://travis-ci.org/Dav1dde/gl3n)
-
-
-gl3n provides all the math you need to work with OpenGL. Currently gl3n supports:
+inmath is a fork of the [gl3n](https://github.com/Dav1dde/gl3n) meant for use within Inochi2D, containing modifications specific to Inochi2D.
+inmath provides all the math you need to work with OpenGL. Currently inmath supports:
 
 * linear algebra
   * vectors
@@ -27,42 +24,12 @@ gl3n provides all the math you need to work with OpenGL. Currently gl3n supports
 License
 =======
 
-gl3n is MIT licensed, which allows you to use it everywhere you want it.
-
-Documentation
-=============
-
-gl3n uses ddoc for documentation. You can build it easily with the Makefile:
-
-    make ddoc
-
-But there is of course also an [online documentation](http://dav1dde.github.com/gl3n/) available.
+inmath, like gl3n is MIT licensed, which allows you to use it everywhere you want it.
 
 Installation
 ============
 
-On Linux you can build gl3n for yourself with:
-
-    make
-    make install
-
-    # archlinux structure:
-    make PREFIX=/usr
-    make install PREFIX=/usr
-
-Or for debian based systems you can use the .deb packages provided by the
-[d-apt repository](http://code.google.com/p/d-apt/wiki/APT_Repository).
-If you want to use gl3n on Fedora, you can use your
-[package manager](https://apps.fedoraproject.org/packages/gl3n-devel) to install it!
-
-
-On Windows you can also use the Makefile, but you need e.g. [cygwin](http://www.cygwin.com/) to run it.
-Otherwise you can use the raw .d files and include them into your project (-I flag).
-
-
-If you want to use gl3n in your project, simply include the sources or use git submodules!
-
-
+You can use inmath in your project via the dub package database.
 
 Examples
 ========
