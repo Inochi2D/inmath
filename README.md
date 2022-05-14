@@ -1,7 +1,7 @@
 Inochi2D Math
 ====
 
-inmath is a fork of the [gl3n](https://github.com/Dav1dde/gl3n) meant for use within Inochi2D, containing modifications specific to Inochi2D.
+inmath is a fork of the [gl3n](https://github.com/Dav1dde/gl3n) meant for use within Inochi2D, containing modifications specific to Inochi2D.  
 inmath provides all the math you need to work with OpenGL. Currently inmath supports:
 
 * linear algebra
