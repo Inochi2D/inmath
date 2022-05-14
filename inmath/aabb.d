@@ -1,9 +1,15 @@
-module gl3n.aabb;
+/**
+    inmath.aabb
+
+    Authors: David Herberth, Inochi2D Project
+    License: MIT
+*/
+module inmath.aabb;
 
 private {
-    import gl3n.linalg : Vector;
-    import gl3n.math : almost_equal;
-    import gl3n.util : TupleRange;
+    import inmath.linalg : Vector;
+    import inmath.math : almost_equal;
+    import inmath.util : TupleRange;
 
     static import std.compiler;
 }
@@ -295,7 +301,7 @@ alias AABB3 AABB;
 
 
 unittest {
-    import gl3n.util : TypeTuple;
+    import inmath.util : TypeTuple;
     alias TypeTuple!(ubyte, byte, short, ushort, int, uint, float, double) Types;
     foreach(type; Types)
     {

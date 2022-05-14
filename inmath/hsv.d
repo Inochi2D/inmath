@@ -1,13 +1,19 @@
-module gl3n.ext.hsv;
+/**
+    inmath.hsv
+
+    Authors: David Herberth, Inochi2D Project
+    License: MIT
+*/
+module inmath.hsv;
 
 private {
     import std.conv : to;
     
-    import gl3n.linalg : vec3, vec4;
-    import gl3n.math : min, max, floor;
+    import inmath.linalg : vec3, vec4;
+    import inmath.math : min, max, floor;
 
     version(unittest) {
-        import gl3n.math : almost_equal;
+        import inmath.math : almost_equal;
     }
 }
 

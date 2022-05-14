@@ -1,17 +1,15 @@
 /**
-gl3n.interpolate
+    inmath.interpolate
 
-Authors: David Herberth
-License: MIT
+    Authors: David Herberth, Inochi2D Project
+    License: MIT
 */
-
-
-module gl3n.interpolate;
+module inmath.interpolate;
 
 private {
-    import gl3n.linalg : Vector, dot, vec2, vec3, vec4, quat;
-    import gl3n.util : is_vector, is_quaternion;
-    import gl3n.math : almost_equal, acos, sin, sqrt, clamp, PI;
+    import inmath.linalg : Vector, dot, vec2, vec3, vec4, quat;
+    import inmath.util : is_vector, is_quaternion;
+    import inmath.math : almost_equal, acos, sin, sqrt, clamp, PI;
     import std.conv : to;
 }
 

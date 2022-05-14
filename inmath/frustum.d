@@ -1,13 +1,20 @@
-/// Note: this module is not completly tested!
-/// Use with special care, results might be wrong.
 
-module gl3n.frustum;
+/**
+    inmath.frustum
+
+    Note: this module is not completly tested!
+    Use with special care, results might be wrong.
+
+    Authors: David Herberth, Inochi2D Project
+    License: MIT
+*/
+module inmath.frustum;
 
 private {
-    import gl3n.linalg : vec3, mat4, dot;
-    import gl3n.math : abs, cradians;
-    import gl3n.aabb : AABB;
-    import gl3n.plane : Plane;
+    import inmath.linalg : vec3, mat4, dot;
+    import inmath.math : abs, cradians;
+    import inmath.aabb : AABB;
+    import inmath.plane : Plane;
 }
 
 enum {

@@ -1,19 +1,19 @@
 /**
-gl3n.math
+    inmath.math
 
-Provides nearly all GLSL functions, according to spec 4.1,
-it also publically imports other useful functions (from std.math, core.stdc.math, std.alogrithm) 
-so you only have to import this file to get all mathematical functions you need.
+    Provides nearly all GLSL functions, according to spec 4.1,
+    it also publically imports other useful functions (from std.math, core.stdc.math, std.alogrithm) 
+    so you only have to import this file to get all mathematical functions you need.
 
-Publically imports: PI, sin, cos, tan, asin, acos, atan, atan2, sinh, cosh, tanh, 
-asinh, acosh, atanh, pow, exp, log, exp2, log2, sqrt, abs, floor, trunc, round, ceil, modf,
-fmodf, min, max.
+    Publically imports: PI, sin, cos, tan, asin, acos, atan, atan2, sinh, cosh, tanh, 
+    asinh, acosh, atanh, pow, exp, log, exp2, log2, sqrt, abs, floor, trunc, round, ceil, modf,
+    fmodf, min, max.
 
-Authors: David Herberth
-License: MIT
+    Authors: David Herberth, Inochi2D Project
+    License: MIT
 */
 
-module gl3n.math;
+module inmath.math;
 
 public {
     import std.math : PI, sin, cos, tan, asin, acos, atan, atan2,
@@ -34,10 +34,10 @@ private {
     import std.range : ElementType;
     import smath = std.math;
     
-    import gl3n.util : is_vector, is_quaternion, is_matrix;
+    import inmath.util : is_vector, is_quaternion, is_matrix;
 
     version(unittest) {
-        import gl3n.linalg : vec2, vec2i, vec3, vec3i, quat;
+        import inmath.linalg : vec2, vec2i, vec3, vec3i, quat;
     }
 }
 

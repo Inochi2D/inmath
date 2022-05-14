@@ -1,8 +1,14 @@
-module gl3n.plane;
+/**
+    inmath.plane
+
+    Authors: David Herberth, Inochi2D Project
+    License: MIT
+*/
+module inmath.plane;
 
 private {
-    import gl3n.linalg : Vector, dot, vec3;
-    import gl3n.math : almost_equal;
+    import inmath.linalg : Vector, dot, vec3;
+    import inmath.math : almost_equal;
 
     import std.traits : isFloatingPoint;
 }

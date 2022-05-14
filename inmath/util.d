@@ -1,15 +1,14 @@
 /**
-gl3n.util
+    inmath.util
 
-Authors: David Herberth
-License: MIT
+    Authors: David Herberth, Inochi2D Project
+    License: MIT
 */
-
-module gl3n.util;
+module inmath.util;
 
 private {
-    import gl3n.linalg : Vector, Matrix, Quaternion;
-    import gl3n.plane : PlaneT;
+    import inmath.linalg : Vector, Matrix, Quaternion;
+    import inmath.plane : PlaneT;
 
     static import std.compiler;
 
@@ -55,9 +54,9 @@ template is_plane(T) {
 
 unittest {
     // I need to import it here like this, otherwise you'll get a compiler
-    // or a linker error depending where gl3n.util gets imported
-    import gl3n.linalg;
-    import gl3n.plane;
+    // or a linker error depending where inmath.util gets imported
+    import inmath.linalg;
+    import inmath.plane;
 
     assert(is_vector!vec2);
     assert(is_vector!vec3);
