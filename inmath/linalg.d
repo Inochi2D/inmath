@@ -462,7 +462,7 @@ static assert(dimension > 0, "0 dimensional vectors don't exist.");
     Vector opBinary(string op : "*")(vt r) const {
         Vector ret;
 
-        foreach(index; TupleRange!(0, dimension)) {
+        static foreach(index; TupleRange!(0, dimension)) {
             ret.vector[index] = vector[index] * r;
         }
 
@@ -472,7 +472,7 @@ static assert(dimension > 0, "0 dimensional vectors don't exist.");
     Vector opBinary(string op : "/")(vt r) const {
         Vector ret;
 
-        foreach(index; TupleRange!(0, dimension)) {
+        static foreach(index; TupleRange!(0, dimension)) {
             ret.vector[index] = cast(vt)(vector[index] / r);
         }
 
@@ -482,15 +482,21 @@ static assert(dimension > 0, "0 dimensional vectors don't exist.");
     Vector opBinary(string op)(Vector r) const if((op == "+") || (op == "-")) {
         Vector ret;
 
-        foreach(index; TupleRange!(0, dimension)) {
+        static foreach(index; TupleRange!(0, dimension)) {
             ret.vector[index] = mixin("cast(vt)(vector[index]" ~ op ~ "r.vector[index])");
         }
 
         return ret;
     }
 
-    vt opBinary(string op : "*")(Vector r) const {
-        return dot(this, r);
+    Vector opBinary(string op : "*")(Vector r) const {
+        Vector ret;
+
+        static foreach(index; 0..dimension) {
+            ret.vector[index] = vector[index] * r.vector[index];
+        }
+
+        return ret;
     }
 
     // vector * matrix (for matrix * vector -> struct Matrix)
@@ -631,10 +637,6 @@ static assert(dimension > 0, "0 dimensional vectors don't exist.");
         }
 
         return true;
-    }
-
-    bool opCast(T : bool)() const {
-        return isFinite;
     }
 
     unittest {
@@ -1932,12 +1934,6 @@ struct Matrix(type, int rows_, int cols_) if((rows_ > 0) && (cols_ > 0)) {
         //TODO: tests for mat4, mat34
     }
 
-    // opEqual => "alias matrix this;"
-
-    bool opCast(T : bool)() const {
-        return isFinite;
-    }
-
     unittest {
         assert(mat2(1.0f, 2.0f, 1.0f, 1.0f) == mat2(1.0f, 2.0f, 1.0f, 1.0f));
         assert(mat2(1.0f, 2.0f, 1.0f, 1.0f) != mat2(1.0f, 1.0f, 1.0f, 1.0f));
@@ -2628,10 +2624,6 @@ struct Quaternion(type) {
 
     bool opEquals(const Quaternion qu) const {
         return quaternion == qu.quaternion;
-    }
-
-    bool opCast(T : bool)() const  {
-        return isFinite;
     }
 
     unittest {
