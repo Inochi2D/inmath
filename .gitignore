@@ -1,7 +1,7 @@
 build/
 doc/
 ddoc/
-gl3n.pc
+inmath.pc
 import/
 lib/
 *.kdev*
@@ -11,4 +11,5 @@ __test__library__
 *.rf
 lt*
 dub.selections.json
-gl3n-test-library
+inmath-test-library
+out/

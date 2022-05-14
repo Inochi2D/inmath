@@ -19,13 +19,17 @@ private {
 /// Params:
 /// type = all values get stored as this type
 struct AABBT(type, uint dimension_ = 3) {
-    alias type at; /// Holds the internal type of the AABB.
-    alias Vector!(at, dimension_) vec; /// Convenience alias to the corresponding vector type.
+    alias at = type; /// Holds the internal type of the AABB.
+    alias vec = Vector!(at, dimension_); /// Convenience alias to the corresponding vector type.
     alias dimension = dimension_;
     static assert(dimension > 0, "0 dimensional AABB don't exist.");
 
     vec min = vec(cast(at)0.0); /// The minimum of the AABB (e.g. vec(0, 0, 0)).
     vec max = vec(cast(at)0.0); /// The maximum of the AABB (e.g. vec(1, 1, 1)).
+
+
+    /// Gets a hash of this item
+    size_t toHash() const { return typeid(this).getHash(&this); }
 
     @safe pure nothrow:
 
@@ -294,21 +298,21 @@ struct AABBT(type, uint dimension_ = 3) {
     }
 }
 
-alias AABBT!(float, 3) AABB3;
-alias AABBT!(float, 2) AABB2;
+alias AABB3 = AABBT!(float, 3);
+alias AABB2 = AABBT!(float, 2);
 
-alias AABB3 AABB;
+alias AABB = AABB3;
 
-
+@("AABB")
 unittest {
     import inmath.util : TypeTuple;
-    alias TypeTuple!(ubyte, byte, short, ushort, int, uint, float, double) Types;
+    alias Types = TypeTuple!(ubyte, byte, short, ushort, int, uint, float, double);
     foreach(type; Types)
     {
         foreach(dim; TupleRange!(1, 5))
         {
             {
-                alias AABBT!(type,dim) aabbTestType;
+                alias aabbTestType = AABBT!(type,dim);
                 auto instance = AABBT!(type,dim)();
             }
         }

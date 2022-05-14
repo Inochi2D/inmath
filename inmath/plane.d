@@ -18,8 +18,8 @@ private {
 /// Params:
 /// type = all values get stored as this type (must be floating point)
 struct PlaneT(type = float) if(isFloatingPoint!type) {
-    alias type pt; /// Holds the internal type of the plane.
-    alias Vector!(pt, 3) vec3; /// Convenience alias to the corresponding vector type.
+    alias pt = type; /// Holds the internal type of the plane.
+    alias vec3 = Vector!(pt, 3); /// Convenience alias to the corresponding vector type.
 
     union {
         struct {
@@ -32,6 +32,9 @@ struct PlaneT(type = float) if(isFloatingPoint!type) {
     }
 
     pt d; /// Holds the planes "constant" (HNF).
+
+    /// Gets a hash of this item
+    size_t toHash() const { return typeid(this).getHash(&this); }
 
     @safe pure nothrow:
 
@@ -111,4 +114,4 @@ struct PlaneT(type = float) if(isFloatingPoint!type) {
 
 }
 
-alias PlaneT!(float) Plane;
+alias Plane = PlaneT!(float);

@@ -20,8 +20,8 @@ public {
                       sinh, cosh, tanh, asinh, acosh, atanh,
                       pow, exp, log, exp2, log2, sqrt,
                       floor, trunc, round, ceil, modf;
-    alias round roundEven;
-    alias floor fract;
+    alias roundEven = round;
+    alias fract = floor;
     //import core.stdc.math : fmodf;
     import std.algorithm : min, max;
 }
@@ -117,7 +117,7 @@ float sign(T)(T x) {
 unittest {
     assert(almost_equal(inversesqrt(1.0f), 1.0f));
     assert(almost_equal(inversesqrt(10.0f), (1/sqrt(10.0f))));
-    assert(almost_equal(inversesqrt(2342342.0f), (1/sqrt(2342342.0f))));
+    assert(almost_equal(inversesqrt(2_342_342.0f), (1/sqrt(2_342_342.0f))));
     
     assert(sign(-1) == -1.0f);
     assert(sign(0) == 0.0f);

@@ -19,9 +19,9 @@ private {
 T interp(T)(T a, T b, float t) {
     return a * (1 - t) + b * t;
 }
-alias interp interp_linear; /// ditto
-alias interp lerp; /// ditto
-alias interp mix; /// ditto
+alias interp_linear = interp; /// ditto
+alias lerp = interp; /// ditto
+alias mix = interp; /// ditto
 
 
 /// Interpolates spherical between to vectors or quaternions, also known as slerp.
@@ -44,7 +44,7 @@ T interp_spherical(T)(T a, T b, float t) if(is_vector!T || is_quaternion!T) {
         return (sin((1.0-t)*theta)/sintheta)*a + (sin(t*theta)/sintheta)*b;
     }
 }
-alias interp_spherical slerp; /// ditto
+alias slerp = interp_spherical; /// ditto
 
 
 /// Normalized quaternion linear interpolation.
@@ -63,6 +63,7 @@ quat nlerp(quat a, quat b, float t) {
     return result;
 }
 
+@("vector interp")
 unittest {
     vec2 v2_1 = vec2(1.0f);
     vec2 v2_2 = vec2(0.0f);
@@ -80,7 +81,17 @@ unittest {
     assert(interp(v4_1, v4_2, 0.5f).vector == [0.5f, 0.5f, 0.5f, 0.5f]);
     assert(interp(v4_1, v4_2, 0.0f) == v4_1);
     assert(interp(v4_1, v4_2, 1.0f) == v4_2);
+    
+    assert(interp_spherical(v2_1, v2_2, 0.0).vector == v2_1.vector);
+    assert(interp_spherical(v2_1, v2_2, 1.0).vector == v2_2.vector);
+    assert(interp_spherical(v3_1, v3_2, 0.0).vector == v3_1.vector);
+    assert(interp_spherical(v3_1, v3_2, 1.0).vector == v3_2.vector);
+    assert(interp_spherical(v4_1, v4_2, 0.0).vector == v4_1.vector);
+    assert(interp_spherical(v4_1, v4_2, 1.0).vector == v4_2.vector);
+}
 
+@("real interp")
+unittest {
     real r1 = 0.0;
     real r2 = 1.0;
     assert(interp(r1, r2, 0.5f) == 0.5);
@@ -94,20 +105,16 @@ unittest {
     assert(interp(0.0f, 1.0f, 0.5f) == 0.5f);
     assert(interp(0.0f, 1.0f, 0.0f) == 0.0f);
     assert(interp(0.0f, 1.0f, 1.0f) == 1.0f);
-    
+}
+
+@("quat interp")
+unittest {
     quat q1 = quat(1.0f, 1.0f, 1.0f, 1.0f);
     quat q2 = quat(0.0f, 0.0f, 0.0f, 0.0f);
-    
+
     assert(interp(q1, q2, 0.0f).quaternion == q1.quaternion);
     assert(interp(q1, q2, 0.5f).quaternion == [0.5f, 0.5f, 0.5f, 0.5f]);
     assert(interp(q1, q2, 1.0f).quaternion == q2.quaternion);
-    
-    assert(interp_spherical(v2_1, v2_2, 0.0).vector == v2_1.vector);
-    assert(interp_spherical(v2_1, v2_2, 1.0).vector == v2_2.vector);
-    assert(interp_spherical(v3_1, v3_2, 0.0).vector == v3_1.vector);
-    assert(interp_spherical(v3_1, v3_2, 1.0).vector == v3_2.vector);
-    assert(interp_spherical(v4_1, v4_2, 0.0).vector == v4_1.vector);
-    assert(interp_spherical(v4_1, v4_2, 1.0).vector == v4_2.vector);
     
     assert(interp_spherical(q1, q2, 0.0f).quaternion == q1.quaternion);
     assert(interp_spherical(q1, q2, 1.0f).quaternion == q2.quaternion);
@@ -119,6 +126,7 @@ T interp_nearest(T)(T x, T y, float t) {
     else { return y; } 
 }
 
+@("nearest interp")
 unittest {
     assert(interp_nearest(0.0, 1.0, 0.5f) == 1.0);
     assert(interp_nearest(0.0, 1.0, 0.4f) == 0.0);

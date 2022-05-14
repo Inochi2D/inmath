@@ -47,47 +47,49 @@ version(NoReciprocalMul) {
 /// alias Vector!(real, 2) vec2r;
 /// ---
 struct Vector(type, int dimension_) {
-    static assert(dimension > 0, "0 dimensional vectors don't exist.");
+static assert(dimension > 0, "0 dimensional vectors don't exist.");
 
-    alias type vt; /// Holds the internal type of the vector.
+    alias vt = type; /// Holds the internal type of the vector.
     static const int dimension = dimension_; ///Holds the dimension of the vector.
 
     vt[dimension] vector; /// Holds all coordinates, length conforms dimension.
 
     /// Returns a pointer to the coordinates.
-    @property auto value_ptr() const { return vector.ptr; }
+    auto ptr() const { return vector.ptr; }
 
     /// Returns the current vector formatted as string, useful for printing the vector.
-    @property string as_string() {
+    const(string) toString() const {
         return format("%s", vector);
     }
-    alias as_string toString; /// ditto
 
-    @safe pure nothrow:
+    /// Gets a hash of this item
+    size_t toHash() const { return typeid(this).getHash(&this); }
+
+@safe pure nothrow:
     ///
-    @property ref inout(vt) get_(char coord)() inout {
+    ref inout(vt) get_(char coord)() inout {
         return vector[coord_to_index!coord];
     }
 
-    alias get_!'x' x; /// static properties to access the values.
-    alias x u; /// ditto
-    alias x s; /// ditto
-    alias x r; /// ditto
+    alias x = get_!'x'; /// static properties to access the values.
+    alias u = x; /// ditto
+    alias s = x; /// ditto
+    alias r = x; /// ditto
     static if(dimension >= 2) {
-        alias get_!'y' y; /// ditto
-        alias y v; /// ditto
-        alias y t; /// ditto
-        alias y g; /// ditto
+        alias y = get_!'y'; /// ditto
+        alias v = y; /// ditto
+        alias t = y; /// ditto
+        alias g = y; /// ditto
     }
     static if(dimension >= 3) {
-        alias get_!'z' z; /// ditto
-        alias z b; /// ditto
-        alias z p; /// ditto
+        alias z = get_!'z'; /// ditto
+        alias b = z; /// ditto
+        alias p = z; /// ditto
     }
     static if(dimension >= 4) {
-        alias get_!'w' w; /// ditto
-        alias w a; /// ditto
-        alias w q; /// ditto
+        alias w = get_!'w'; /// ditto
+        alias a = w; /// ditto
+        alias q = w; /// ditto
     }
 
     static if(dimension == 2) {
@@ -184,7 +186,7 @@ struct Vector(type, int dimension_) {
     }
 
     /// Returns true if all values are not nan and finite, otherwise false.
-    @property bool isFinite() const {
+    bool isFinite() const {
         static if(isIntegral!type) {
             return true;
         }
@@ -377,7 +379,7 @@ struct Vector(type, int dimension_) {
 
     /// Implements dynamic swizzling.
     /// Returns: a Vector
-    @property Vector!(vt, s.length) opDispatch(string s)() const {
+    Vector!(vt, s.length) opDispatch(string s)() const {
         vt[s.length] ret;
         dispatchImpl!(0, s)(ret);
         Vector!(vt, s.length) ret_vec;
@@ -398,7 +400,7 @@ struct Vector(type, int dimension_) {
     }
 
     /// Returns the squared magnitude of the vector.
-    @property real magnitude_squared() const {
+    real magnitude_squared() const {
         real temp = 0;
 
         foreach(index; TupleRange!(0, dimension)) {
@@ -409,12 +411,12 @@ struct Vector(type, int dimension_) {
     }
 
     /// Returns the magnitude of the vector.
-    @property real magnitude() const {
+    real magnitude() const {
         return sqrt(magnitude_squared);
     }
 
-    alias magnitude_squared length_squared; /// ditto
-    alias magnitude length; /// ditto
+    alias length_squared = magnitude_squared; /// ditto
+    alias length = magnitude; /// ditto
 
     /// Normalizes the vector.
     void normalize() {
@@ -428,7 +430,7 @@ struct Vector(type, int dimension_) {
     }
 
     /// Returns a normalized copy of the current vector.
-    @property Vector normalized() const {
+    Vector normalized() const {
         Vector ret;
         ret.update(this);
         ret.normalize();
@@ -667,7 +669,6 @@ struct Vector(type, int dimension_) {
         if(vec4(1.0f)) { }
         else { assert(false); }
     }
-
 }
 
 /// Calculates the product between two vectors.
@@ -693,6 +694,7 @@ T.vt distance(T)(const T veca, const T vecb) @safe pure nothrow if(is_vector!T) 
     return (veca - vecb).length;
 }
 
+@("vector dot product")
 unittest {
     // dot is already tested in Vector.opBinary, so no need for testing with more vectors
     vec3 v1 = vec3(1.0f, 2.0f, -3.0f);
@@ -714,6 +716,7 @@ T reflect(T)(const T vec, const T norm) @safe pure nothrow if(is_vector!T) {
     return (2 * (vec * norm) * norm) - vec;
 }
 
+@("vector reflect")
 unittest
 {
     assert(vec2(1,1).reflect(vec2(0,1)) == vec2(-1,1));
@@ -724,17 +727,21 @@ unittest
 }
 
 /// Pre-defined vector types, the number represents the dimension and the last letter the type (none = float, d = double, i = int).
-alias Vector!(float, 2) vec2;
-alias Vector!(float, 3) vec3; /// ditto
-alias Vector!(float, 4) vec4; /// ditto
+alias vec2 = Vector!(float, 2);
+alias vec3 = Vector!(float, 3); /// ditto
+alias vec4 = Vector!(float, 4); /// ditto
 
-alias Vector!(double, 2) vec2d; /// ditto
-alias Vector!(double, 3) vec3d; /// ditto
-alias Vector!(double, 4) vec4d; /// ditto
+alias vec2d = Vector!(double, 2); /// ditto
+alias vec3d = Vector!(double, 3); /// ditto
+alias vec4d = Vector!(double, 4); /// ditto
 
-alias Vector!(int, 2) vec2i; /// ditto
-alias Vector!(int, 3) vec3i; /// ditto
-alias Vector!(int, 4) vec4i; /// ditto
+alias vec2i = Vector!(int, 2); /// ditto
+alias vec3i = Vector!(int, 3); /// ditto
+alias vec4i = Vector!(int, 4); /// ditto
+
+alias vec2u = Vector!(uint, 2); /// ditto
+alias vec3u = Vector!(uint, 3); /// ditto
+alias vec4u = Vector!(uint, 4); /// ditto
 
 /*alias Vector!(ubyte, 2) vec2ub;
 alias Vector!(ubyte, 3) vec3ub;
@@ -753,7 +760,7 @@ alias Vector!(ubyte, 4) vec4ub;*/
 /// alias Matrix!(real, 2, 2) mat2r;
 /// ---
 struct Matrix(type, int rows_, int cols_) if((rows_ > 0) && (cols_ > 0)) {
-    alias type mt; /// Holds the internal type of the matrix;
+    alias mt = type; /// Holds the internal type of the matrix;
     static const int rows = rows_; /// Holds the number of rows;
     static const int cols = cols_; /// Holds the number of columns;
 
@@ -801,18 +808,17 @@ struct Matrix(type, int rows_, int cols_) if((rows_ > 0) && (cols_ > 0)) {
     /// Examples:
     /// ---
     /// // 3rd argument = GL_TRUE
-    /// glUniformMatrix4fv(programs.main.model, 1, GL_TRUE, mat4.translation(-0.5f, -0.5f, 1.0f).value_ptr);
+    /// glUniformMatrix4fv(programs.main.model, 1, GL_TRUE, mat4.translation(-0.5f, -0.5f, 1.0f).ptr);
     /// ---
-    @property auto value_ptr() const { return matrix[0].ptr; }
+    auto ptr() const { return matrix[0].ptr; }
 
     /// Returns the current matrix formatted as flat string.
-    @property string as_string() {
+    string toString() const {
         return format("%s", matrix);
     }
-    alias as_string toString; /// ditto
 
     /// Returns the current matrix as pretty formatted string.
-    @property string as_pretty_string() {
+    string toPrettyString() {
         string fmtr = "%s";
 
         size_t rjust = max(format(fmtr, reduce!(max)(matrix[])).length,
@@ -829,7 +835,6 @@ struct Matrix(type, int rows_, int cols_) if((rows_ > 0) && (cols_ > 0)) {
 
         return "[" ~ join(outer_parts, "\n")[1..$] ~ "]";
     }
-    alias as_pretty_string toPrettyString; /// ditto
 
     @safe pure nothrow:
     static void isCompatibleMatrixImpl(int r, int c)(Matrix!(mt, r, c) m) {
@@ -914,7 +919,7 @@ struct Matrix(type, int rows_, int cols_) if((rows_ > 0) && (cols_ > 0)) {
     }
 
     /// Returns true if all values are not nan and finite, otherwise false.
-    @property bool isFinite() const {
+    bool isFinite() const {
         static if(isIntegral!type) {
             return true;
         }
@@ -1004,7 +1009,7 @@ struct Matrix(type, int rows_, int cols_) if((rows_ > 0) && (cols_ > 0)) {
         }
 
         /// Returns a identity matrix.
-        static @property Matrix identity() {
+        static Matrix identity() {
             Matrix ret;
             ret.clear(0);
 
@@ -1054,7 +1059,7 @@ struct Matrix(type, int rows_, int cols_) if((rows_ > 0) && (cols_ > 0)) {
     }
 
     /// Returns a transposed copy of the matrix.
-    @property Matrix!(mt, cols, rows) transposed() const {
+    Matrix!(mt, cols, rows) transposed() const {
         typeof(return) ret;
 
         foreach(r; TupleRange!(0, rows)) {
@@ -1070,7 +1075,7 @@ struct Matrix(type, int rows_, int cols_) if((rows_ > 0) && (cols_ > 0)) {
 
 
     static if((rows == 2) && (cols == 2)) {
-        @property mt det() const {
+        mt det() const {
             return (matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0]);
         }
 
@@ -1110,7 +1115,7 @@ struct Matrix(type, int rows_, int cols_) if((rows_ > 0) && (cols_ > 0)) {
         }
 
     } else static if((rows == 3) && (cols == 3)) {
-        @property mt det() const {
+        mt det() const {
             return (matrix[0][0] * matrix[1][1] * matrix[2][2]
                   + matrix[0][1] * matrix[1][2] * matrix[2][0]
                   + matrix[0][2] * matrix[1][0] * matrix[2][1]
@@ -1144,7 +1149,7 @@ struct Matrix(type, int rows_, int cols_) if((rows_ > 0) && (cols_ > 0)) {
         }
     } else static if((rows == 4) && (cols == 4)) {
         /// Returns the determinant of the current matrix (2x2, 3x3 and 4x4 matrices).
-        @property mt det() const {
+        mt det() const {
             return (matrix[0][3] * matrix[1][2] * matrix[2][1] * matrix[3][0] - matrix[0][2] * matrix[1][3] * matrix[2][1] * matrix[3][0]
                   - matrix[0][3] * matrix[1][1] * matrix[2][2] * matrix[3][0] + matrix[0][1] * matrix[1][3] * matrix[2][2] * matrix[3][0]
                   + matrix[0][2] * matrix[1][1] * matrix[2][3] * matrix[3][0] - matrix[0][1] * matrix[1][2] * matrix[2][3] * matrix[3][0]
@@ -1321,7 +1326,7 @@ struct Matrix(type, int rows_, int cols_) if((rows_ > 0) && (cols_ > 0)) {
 
             /// Returns a look at matrix (4x4 and floating-point matrices only).
             static Matrix look_at(Vector!(mt, 3) eye, Vector!(mt, 3) target, Vector!(mt, 3) up) {
-                alias Vector!(mt, 3) vec3mt;
+                alias vec3mt = Vector!(mt, 3);
                 vec3mt look_dir = (target - eye).normalized;
                 vec3mt up_dir = up.normalized;
 
@@ -1773,7 +1778,7 @@ struct Matrix(type, int rows_, int cols_) if((rows_ > 0) && (cols_ > 0)) {
 
     static if((rows == cols) && (rows >= 2) && (rows <= 4)) {
         /// Returns an inverted copy of the current matrix (nxn matrices, 2 >= n <= 4).
-        @property Matrix inverse() const {
+        Matrix inverse() const {
             Matrix mat;
             invert(mat);
             return mat;
@@ -1947,16 +1952,15 @@ struct Matrix(type, int rows_, int cols_) if((rows_ > 0) && (cols_ > 0)) {
         if(mat4(1.0f)) { }
         else { assert(false); }
     }
-
 }
 
 /// Pre-defined matrix types, the first number represents the number of rows
 /// and the second the number of columns, if there's just one it's a nxn matrix.
 /// All of these matrices are floating-point matrices.
-alias Matrix!(float, 2, 2) mat2;
-alias Matrix!(float, 3, 3) mat3;
-alias Matrix!(float, 3, 4) mat34;
-alias Matrix!(float, 4, 4) mat4;
+alias mat2 = Matrix!(float, 2, 2);
+alias mat3 = Matrix!(float, 3, 3);
+alias mat34 = Matrix!(float, 3, 4);
+alias mat4 = Matrix!(float, 4, 4);
 
 private unittest {
     Matrix!(float,  1, 1) A = 1;
@@ -1977,35 +1981,37 @@ private unittest {
 /// Params:
 ///  type = all values get stored as this type
 struct Quaternion(type) {
-    alias type qt; /// Holds the internal type of the quaternion.
+    alias qt = type; /// Holds the internal type of the quaternion.
 
     qt[4] quaternion; /// Holds the w, x, y and z coordinates.
 
     /// Returns a pointer to the quaternion in memory, it starts with the w coordinate.
-    @property auto value_ptr() const { return quaternion.ptr; }
+    auto ptr() const { return quaternion.ptr; }
 
     /// Returns the current vector formatted as string, useful for printing the quaternion.
-    @property string as_string() {
+    string toString() const {
         return format("%s", quaternion);
     }
-    alias as_string toString;
+
+    /// Gets a hash of this item
+    size_t toHash() const { return typeid(this).getHash(&this); }
 
     @safe pure nothrow:
-    @property qt get_(char coord)() const {
+    qt get_(char coord)() const {
         return quaternion[coord_to_index!coord];
     }
-    @property void set_(char coord)(qt value) {
+    void set_(char coord)(qt value) {
         quaternion[coord_to_index!coord] = value;
     }
 
-    alias get_!'w' w; /// static properties to access the values.
-    alias set_!'w' w;
-    alias get_!'x' x; /// ditto
-    alias set_!'x' x;
-    alias get_!'y' y; /// ditto
-    alias set_!'y' y;
-    alias get_!'z' z; /// ditto
-    alias set_!'z' z;
+    alias w = get_!'w'; /// static properties to access the values.
+    alias w = set_!'w';
+    alias x = get_!'x'; /// ditto
+    alias x = set_!'x';
+    alias y = get_!'y'; /// ditto
+    alias y = set_!'y';
+    alias z = get_!'z'; /// ditto
+    alias z = set_!'z';
 
     /// Constructs the quaternion.
     /// Takes a 4-dimensional vector, where vector.x = the quaternions w coordinate,
@@ -2030,7 +2036,7 @@ struct Quaternion(type) {
     }
 
     /// Returns true if all values are not nan and finite, otherwise false.
-    @property bool isFinite() const {
+    bool isFinite() const {
         foreach(q; quaternion) {
             if(isNaN(q) || isInfinity(q)) {
                 return false;
@@ -2071,17 +2077,17 @@ struct Quaternion(type) {
     }
 
     /// Returns the squared magnitude of the quaternion.
-    @property real magnitude_squared() const {
+    real magnitude_squared() const {
         return to!real(w^^2 + x^^2 + y^^2 + z^^2);
     }
 
     /// Returns the magnitude of the quaternion.
-    @property real magnitude() const {
+    real magnitude() const {
         return sqrt(magnitude_squared);
     }
 
     /// Returns an identity quaternion (w=1, x=0, y=0, z=0).
-    static @property Quaternion identity() {
+    static Quaternion identity() {
         return Quaternion(1, 0, 0, 0);
     }
 
@@ -2099,13 +2105,13 @@ struct Quaternion(type) {
         y = -y;
         z = -z;
     }
-    alias invert conjugate; /// ditto
+    alias conjugate = invert; /// ditto
 
     /// Returns an inverted copy of the current quaternion.
-    @property Quaternion inverse() const {
+    Quaternion inverse() const {
         return Quaternion(w, -x, -y, -z);
     }
-    alias inverse conjugated; /// ditto
+    alias conjugated = inverse; /// ditto
 
     unittest {
         quat q1 = quat(1.0f, 1.0f, 1.0f, 1.0f);
@@ -2316,17 +2322,17 @@ struct Quaternion(type) {
     }
 
     /// Returns the yaw.
-    @property real yaw() const {
+    real yaw() const {
         return atan2(to!real(2.0*(w*z + x*y)), to!real(1.0 - 2.0*(y*y + z*z)));
     }
 
     /// Returns the pitch.
-    @property real pitch() const {
+    real pitch() const {
         return asin(to!real(2.0*(w*y - z*x)));
     }
 
     /// Returns the roll.
-    @property real roll() const {
+    real roll() const {
         return atan2(to!real(2.0*(w*x + y*z)), to!real(1.0 - 2.0*(x*x + y*y)));
     }
 
@@ -2636,8 +2642,7 @@ struct Quaternion(type) {
         if(quat(1.0f, 1.0f, 1.0f, 1.0f)) { }
         else { assert(false); }
     }
-
 }
 
 /// Pre-defined quaternion of type float.
-alias Quaternion!(float) quat;
+alias quat = Quaternion!(float);
