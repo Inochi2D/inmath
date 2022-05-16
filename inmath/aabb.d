@@ -8,7 +8,7 @@ module inmath.aabb;
 
 private {
     import inmath.linalg : Vector;
-    import inmath.math : almost_equal;
+    import inmath.math : almostEqual;
     import inmath.util : TupleRange;
 
     static import std.compiler;
@@ -43,7 +43,7 @@ struct AABBT(type, uint dimension_ = 3) {
     }
 
     /// Constructs the AABB around N points (all points will be part of the AABB).
-    static AABBT from_points(vec[] points) {
+    static AABBT fromPoints(vec[] points) {
         AABBT res;
 
         if(points.length == 0) {
@@ -75,14 +75,14 @@ struct AABBT(type, uint dimension_ = 3) {
         assert(a.min == sizedVec([0.0, 1.0, 2.0, 3.0]));
         assert(a.max == sizedVec([1.0, 2.0, 3.0, 4.0]));
 
-        a = AABB.from_points([
+        a = AABB.fromPoints([
             sizedVec([1.0, 0.0, 1.0, 5.0]),
             sizedVec([0.0, 2.0, 3.0, 3.0]),
             sizedVec([1.0, 0.0, 4.0, 4.0])]);
         assert(a.min == sizedVec([0.0, 0.0, 1.0, 3.0]));
         assert(a.max == sizedVec([1.0, 2.0, 4.0, 5.0]));
 
-        a = AABB.from_points([sizedVec([1.0, 1.0, 1.0, 1.0]), sizedVec([2.0, 2.0, 2.0, 2.0])]);
+        a = AABB.fromPoints([sizedVec([1.0, 1.0, 1.0, 1.0]), sizedVec([2.0, 2.0, 2.0, 2.0])]);
         assert(a.min == sizedVec([1.0, 1.0, 1.0, 1.0]));
         assert(a.max == sizedVec([2.0, 2.0, 2.0, 2.0]));
     }
@@ -149,7 +149,7 @@ struct AABBT(type, uint dimension_ = 3) {
     }
 
     /// Returns the half extent.
-    @property vec half_extent() const {
+    @property vec halfExtent() const {
         return (max - min) / 2;
     }
 
@@ -158,11 +158,11 @@ struct AABBT(type, uint dimension_ = 3) {
 
         AABB a = AABB(sizedVec([0.0, 0.0, 0.0, 0.0]), sizedVec([10.0, 10.0, 10.0, 10.0]));
         assert(a.extent == sizedVec([10.0, 10.0, 10.0, 10.0]));
-        assert(a.half_extent == a.extent / 2);
+        assert(a.halfExtent == a.extent / 2);
 
         AABB b = AABB(sizedVec([2.0, 2.0, 2.0, 2.0]), sizedVec([10.0, 10.0, 10.0, 10.0]));
         assert(b.extent == sizedVec([8.0, 8.0, 8.0, 8.0]));
-        assert(b.half_extent == b.extent / 2);
+        assert(b.halfExtent == b.extent / 2);
     }
 
     /// Returns the area of the AABB.
@@ -203,8 +203,8 @@ struct AABBT(type, uint dimension_ = 3) {
             AABB c = AABB(sizedVec([2.0, 4.0, 6.0, 6.0]), sizedVec([10.0, 10.0, 10.0, 10.0]));
             switch (dimension) {
                 case 1: assert(c.area == 0); break;
-                case 2: assert(almost_equal(c.area, 48.0)); break;
-                case 3: assert(almost_equal(c.area, 208.0)); break;
+                case 2: assert(almostEqual(c.area, 48.0)); break;
+                case 3: assert(almostEqual(c.area, 208.0)); break;
                 default: assert(0);
             }
         }

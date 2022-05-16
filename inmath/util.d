@@ -23,32 +23,32 @@ static if (std.compiler.version_major > 2 ||
     public import std.typetuple : TypeTuple;
 }
 
-private void is_vector_impl(T, int d)(Vector!(T, d) vec) {}
+private void isVector_impl(T, int d)(Vector!(T, d) vec) {}
 
 /// If T is a vector, this evaluates to true, otherwise false.
-template is_vector(T) {
-    enum is_vector = is(typeof(is_vector_impl(T.init)));
+template isVector(T) {
+    enum isVector = is(typeof(isVector_impl(T.init)));
 }
 
-private void is_matrix_impl(T, int r, int c)(Matrix!(T, r, c) mat) {}
+private void isMatrix_impl(T, int r, int c)(Matrix!(T, r, c) mat) {}
 
 /// If T is a matrix, this evaluates to true, otherwise false.
-template is_matrix(T) {
-    enum is_matrix = is(typeof(is_matrix_impl(T.init)));
+template isMatrix(T) {
+    enum isMatrix = is(typeof(isMatrix_impl(T.init)));
 }
 
-private void is_quaternion_impl(T)(Quaternion!(T) qu) {}
+private void isQuaternion_impl(T)(Quaternion!(T) qu) {}
 
 /// If T is a quaternion, this evaluates to true, otherwise false.
-template is_quaternion(T) {
-    enum is_quaternion = is(typeof(is_quaternion_impl(T.init)));
+template isQuaternion(T) {
+    enum isQuaternion = is(typeof(isQuaternion_impl(T.init)));
 }
 
-private void is_plane_impl(T)(PlaneT!(T) p) {}
+private void isPlane_impl(T)(PlaneT!(T) p) {}
 
 /// If T is a plane, this evaluates to true, otherwise false.
-template is_plane(T) {
-    enum is_plane = is(typeof(is_plane_impl(T.init)));
+template isPlane(T) {
+    enum isPlane = is(typeof(isPlane_impl(T.init)));
 }
 
 
@@ -58,33 +58,33 @@ unittest {
     import inmath.linalg;
     import inmath.plane;
 
-    assert(is_vector!vec2);
-    assert(is_vector!vec3);
-    assert(is_vector!vec3d);
-    assert(is_vector!vec4i);
-    assert(!is_vector!int);
-    assert(!is_vector!mat34);
-    assert(!is_vector!quat);
+    assert(isVector!vec2);
+    assert(isVector!vec3);
+    assert(isVector!vec3d);
+    assert(isVector!vec4i);
+    assert(!isVector!int);
+    assert(!isVector!mat34);
+    assert(!isVector!quat);
 
-    assert(is_matrix!mat2);
-    assert(is_matrix!mat34);
-    assert(is_matrix!mat4);
-    assert(!is_matrix!float);
-    assert(!is_matrix!vec3);
-    assert(!is_matrix!quat);
+    assert(isMatrix!mat2);
+    assert(isMatrix!mat34);
+    assert(isMatrix!mat4);
+    assert(!isMatrix!float);
+    assert(!isMatrix!vec3);
+    assert(!isMatrix!quat);
 
-    assert(is_quaternion!quat);
-    assert(!is_quaternion!vec2);
-    assert(!is_quaternion!vec4i);
-    assert(!is_quaternion!mat2);
-    assert(!is_quaternion!mat34);
-    assert(!is_quaternion!float);
+    assert(isQuaternion!quat);
+    assert(!isQuaternion!vec2);
+    assert(!isQuaternion!vec4i);
+    assert(!isQuaternion!mat2);
+    assert(!isQuaternion!mat34);
+    assert(!isQuaternion!float);
 
-    assert(is_plane!Plane);
-    assert(!is_plane!vec2);
-    assert(!is_plane!quat);
-    assert(!is_plane!mat4);
-    assert(!is_plane!float);
+    assert(isPlane!Plane);
+    assert(!isPlane!vec2);
+    assert(!isPlane!quat);
+    assert(!isPlane!mat4);
+    assert(!isPlane!float);
 }
 
 template TupleRange(int from, int to) if (from <= to) {

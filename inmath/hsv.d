@@ -13,7 +13,7 @@ private {
     import inmath.math : min, max, floor;
 
     version(unittest) {
-        import inmath.math : almost_equal;
+        import inmath.math : almostEqual;
     }
 }
 
@@ -67,7 +67,7 @@ unittest {
     assert(rgb2hsv(vec3(1.0f, 1.0f, 1.0f)) == vec3(0.0f, 0.0f, 1.0f));
 
     vec3 hsv = rgb2hsv(vec3(100.0f/255.0f, 100.0f/255.0f, 100.0f/255.0f));    
-    assert(hsv.x == 0.0f && hsv.y == 0.0f && almost_equal(hsv.z, 0.392157, 0.000001));
+    assert(hsv.x == 0.0f && hsv.y == 0.0f && almostEqual(hsv.z, 0.392157, 0.000001));
     
     assert(rgb2hsv(vec3(0.0f, 0.0f, 1.0f)) == vec3(240.0f, 1.0f, 1.0f));
 }

@@ -106,7 +106,7 @@ struct Frustum {
     /// Checks if the $(I aabb) intersects with the frustum.
     /// Returns OUTSIDE (= 0), INSIDE (= 1) or INTERSECT (= 2).
     int intersects(AABB aabb) const {
-        vec3 hextent = aabb.half_extent;
+        vec3 hextent = aabb.halfExtent;
         vec3 center = aabb.center;
 
         int result = INSIDE;
@@ -126,8 +126,9 @@ struct Frustum {
         return result;
     }
 
+    @("frustrum")
     unittest {
-        mat4 view = mat4.look_at(vec3(0), vec3(0, 0, 1), vec3(0, 1, 0));
+        mat4 view = mat4.lookAt(vec3(0), vec3(0, 0, 1), vec3(0, 1, 0));
         enum aspect = 4.0/3.0;
         enum fov = 60;
         enum near = 1;
