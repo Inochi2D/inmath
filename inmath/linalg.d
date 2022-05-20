@@ -2756,8 +2756,24 @@ struct Rect(type) {
     /**
         Gets the center of a rect
     */
-    vec2 center() const {
-        return vec2(this.x + (this.width/2), this.y + (this.height/2));
+    Vector!(rt, 2) center() const {
+        return Vector!(rt, 2)(this.x + (this.width/2), this.y + (this.height/2));
+    }
+
+    /**
+        Gets the corner of a rect
+    */
+    Vector!(rt, 2) corner() const {
+        return Vector!(rt, 2)(this.x, this.y);
+    }
+
+    /**
+        Gets the dimensions of a rect
+
+        TODO: Implement dim type?
+    */
+    Vector!(rt, 2) dim() const {
+        return Vector!(rt, 2)(this.width, this.height);
     }
 
     /**
@@ -2790,7 +2806,7 @@ struct Rect(type) {
     }
 
     /**
-        Expands the rect by the specified amount
+        Expands the rect by the specified amount from the center
     */
     void expand(vtype)(vtype other) const if (isVector!vtype && vtype.dimension == 2) {
         this.x -= other.x;
@@ -2800,10 +2816,25 @@ struct Rect(type) {
     }
 
     /**
-        Gets a rect that has been expanded by the specified amount
+        Expands the rect by the specified amount from the corner
+    */
+    void expandSize(vtype)(vtype other) const if (isVector!vtype && vtype.dimension == 2) {
+        this.width += other.x;
+        this.height += other.y;
+    }
+
+    /**
+        Gets a rect that has been expanded by the specified amount from the center
     */
     RectT expanded(vtype)(vtype other) const if (isVector!vtype && vtype.dimension == 2) {
         return RectT(this.x-other.x, this.y-other.y, this.width+(other.x*2), this.height+(other.y*2));
+    }
+
+    /**
+        Expands the rect by the specified amount from the corner
+    */
+    RectT expandedSize(vtype)(vtype other) const if (isVector!vtype && vtype.dimension == 2) {
+        return RectT(this.x, this.y, this.width+other.x, this.height+other.y);
     }
 
     /**
