@@ -7,7 +7,7 @@
 module inmath.util;
 
 private {
-    import inmath.linalg : Vector, Matrix, Quaternion;
+    import inmath.linalg : Vector, Matrix, Quaternion, Rect;
     import inmath.plane : PlaneT;
 
     static import std.compiler;
@@ -23,33 +23,20 @@ static if (std.compiler.version_major > 2 ||
     public import std.typetuple : TypeTuple;
 }
 
-private void isVector_impl(T, int d)(Vector!(T, d) vec) {}
-
 /// If T is a vector, this evaluates to true, otherwise false.
-template isVector(T) {
-    enum isVector = is(typeof(isVector_impl(T.init)));
-}
-
-private void isMatrix_impl(T, int r, int c)(Matrix!(T, r, c) mat) {}
+enum isVector(T) = is(T : Vector!U, U...);
 
 /// If T is a matrix, this evaluates to true, otherwise false.
-template isMatrix(T) {
-    enum isMatrix = is(typeof(isMatrix_impl(T.init)));
-}
-
-private void isQuaternion_impl(T)(Quaternion!(T) qu) {}
+enum isMatrix(T) = is(T : Matrix!U, U...);
 
 /// If T is a quaternion, this evaluates to true, otherwise false.
-template isQuaternion(T) {
-    enum isQuaternion = is(typeof(isQuaternion_impl(T.init)));
-}
+enum isQuaternion(T) = is(T : Quaternion!U, U...);
 
-private void isPlane_impl(T)(PlaneT!(T) p) {}
+/// If T is a rect, this evaluates to true, otherwise false.
+enum isRect(T) = is(T : Rect!U, U...);
 
 /// If T is a plane, this evaluates to true, otherwise false.
-template isPlane(T) {
-    enum isPlane = is(typeof(isPlane_impl(T.init)));
-}
+enum isPlane(T) = is(T : PlaneT!U, U...);
 
 
 unittest {
