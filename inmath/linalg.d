@@ -27,7 +27,7 @@ private {
     import std.array : join;
     import std.algorithm : max, min, reduce;
     import inmath.math : clamp, PI, sqrt, sin, cos, acos, tan, asin, atan2, almostEqual;
-    import inmath.util : isVector, isMatrix, isQuaternion, TupleRange;
+    import inmath.util : isVector, isMatrix, isQuaternion, isRect, TupleRange;
 }
 
 version(NoReciprocalMul) {
@@ -834,7 +834,7 @@ struct Matrix(type, int rows_, int cols_) if((rows_ > 0) && (cols_ > 0)) {
         return "[" ~ join(outer_parts, "\n")[1..$] ~ "]";
     }
 
-    @safe pure nothrow:
+@safe pure nothrow:
     static void isCompatibleMatrixImpl(int r, int c)(Matrix!(mt, r, c) m) {
     }
 
@@ -1988,7 +1988,7 @@ struct Quaternion(type) {
     /// Gets a hash of this item
     size_t toHash() const { return typeid(this).getHash(&this); }
 
-    @safe pure nothrow:
+@safe pure nothrow:
     qt get_(char coord)() const {
         return quaternion[coordToIndex!coord];
     }
@@ -2699,3 +2699,135 @@ struct Quaternion(type) {
 
 /// Pre-defined quaternion of type float.
 alias quat = Quaternion!(float);
+
+struct Rect(type) {
+    alias rt = type; /// Holds the internal type of the rect.
+    alias RectT = Rect!type;
+
+    union {
+        struct {
+            rt x;
+            rt y;
+            rt width;
+            rt height;
+        }
+        rt[4] elements; /// Holds the x, y, width and height
+    }
+
+    /// Returns a pointer to the quaternion in memory, it starts with the w coordinate.
+    auto ptr() const { return elements.ptr; }
+@safe pure nothrow:
+
+    /**
+        returns identity rect
+    */
+    static auto identity() {
+        return RectT(0, 0, 0, 0);
+    }
+
+    /**
+        Left coordinate of the rect
+    */
+    rt left() const {
+        return x;
+    }
+
+    /**
+        Right coordinate of the rect
+    */
+    rt right() const {
+        return x+width;
+    }
+
+    /**
+        Top coordinate of the rect
+    */
+    rt top() const {
+        return y;
+    }
+
+    /**
+        Bottom coordinate of the rect
+    */
+    rt bottom() const {
+        return y+height;
+    }
+
+    /**
+        Gets the center of a rect
+    */
+    vec2 center() const {
+        return vec2(this.x + (this.width/2), this.y + (this.height/2));
+    }
+
+    @("rect center")
+    unittest {
+        RectT a = RectT(0, 0, 32, 32);
+        assert(a.center == vec2(16, 16));
+    }
+
+    /**
+        Gets whether this rect intersects another rect
+    */
+    bool intersects(rtype)(rtype other) const if (isRect!rtype) {
+        return !(other.left >= this.right || other.right <= this.left || other.top >= this.bottom || other.bottom <= this.top);
+    }
+
+    /**
+        Gets whether this rect intersects a vector
+    */
+    bool intersects(vtype)(vtype other) const if (isVector!vtype) {
+        return !(other.x >= this.right || other.x <= this.left || other.y >= this.bottom || other.y <= this.top);
+    }
+
+    @("rect intersects")
+    unittest {
+        RectT a = RectT(0, 0, 32, 32);
+        RectT b = RectT(16, 16, 32, 32);
+        RectT c = RectT(0, 32, 32, 32);
+        vec2 p = vec2(8, 8);
+
+        assert(a.intersects(b));
+        assert(b.intersects(c));
+        assert(!a.intersects(c));
+        
+        assert(a.intersects(p));
+        assert(!b.intersects(p));
+        assert(!c.intersects(p));
+    }
+
+    /**
+        Displaces the rect by the specified amount
+    */
+    void displace(vtype)(vtype other) const if (isVector!vtype && vtype.dimension == 2) {
+        this.x += other.x;
+        this.y += other.y;
+    }
+
+    /**
+        Gets a rect that has been displaced by the specified amount
+    */
+    RectT displaced(vtype)(vtype other) const if (isVector!vtype && vtype.dimension == 2) {
+        return RectT(this.x+other.x, this.y+other.y, this.width, this.height);
+    }
+
+    /**
+        Expands the rect by the specified amount
+    */
+    void expand(vtype)(vtype other) const if (isVector!vtype && vtype.dimension == 2) {
+        this.x -= other.x;
+        this.y -= other.y;
+        this.width += other.x*2;
+        this.height += other.y*2;
+    }
+
+    /**
+        Gets a rect that has been expanded by the specified amount
+    */
+    RectT expanded(vtype)(vtype other) const if (isVector!vtype && vtype.dimension == 2) {
+        return RectT(this.x-other.x, this.y-other.y, this.width+(other.x*2), this.height+(other.y*2));
+    }
+}
+
+alias rect = Rect!(float);
+alias rectd = Rect!(double);
