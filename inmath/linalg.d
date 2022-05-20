@@ -2770,7 +2770,7 @@ struct Rect(type) {
     /**
         Gets the dimensions of a rect
     */
-    Vector!(rt, 2) dim() const {
+    Vector!(rt, 2) dimensions() const {
         return Vector!(rt, 2)(this.width, this.height);
     }
 
