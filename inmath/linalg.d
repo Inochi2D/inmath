@@ -66,6 +66,82 @@ static assert(dimension > 0, "0 dimensional vectors don't exist.");
     size_t toHash() const { return typeid(this).getHash(&this); }
 
 @safe pure nothrow:
+
+    /**
+        A vector with all zeroes
+    */
+    static auto zero() {
+        return Vector!(type, dimension_)(0); 
+    }
+
+    /**
+        A vector with all ones
+    */
+    static auto one() {
+        return Vector!(type, dimension_)(1); 
+    }
+    
+    /**
+        Up vector (0, -1) OR (0, 1, 0)
+    */
+    static auto up() {
+        static if (dimension_ == 2) return Vector!(type, dimension_)(cast(type)0, cast(type)-1); 
+        else static if (dimension_ == 3) return Vector!(type, dimension_)(cast(type)0, cast(type)1, cast(type)0); 
+        else static if (dimension_ == 4) return Vector!(type, dimension_)(cast(type)0, cast(type)1, cast(type)0, cast(type)0); 
+        else return Vector!(type, dimension_).init;
+    }
+    
+    /**
+        Down vector (0, 1) OR (0, -1, 0)
+    */
+    static auto down() {
+        static if (dimension_ == 2) return Vector!(type, dimension_)(cast(type)0, cast(type)1); 
+        else static if (dimension_ == 3) return Vector!(type, dimension_)(cast(type)0, cast(type)-1, cast(type)0); 
+        else static if (dimension_ == 4) return Vector!(type, dimension_)(cast(type)0, cast(type)-1, cast(type)0, cast(type)0); 
+        else return Vector!(type, dimension_).init;
+    }
+    
+    /**
+        Left vector (-1, 0, 0)
+    */
+    static auto left() {
+        static if (dimension_ == 2) return Vector!(type, dimension_)(cast(type)-1, cast(type)0); 
+        else static if (dimension_ == 3) return Vector!(type, dimension_)(cast(type)-1, cast(type)0, cast(type)0); 
+        else static if (dimension_ == 4) return Vector!(type, dimension_)(cast(type)-1, cast(type)0, cast(type)0, cast(type)0); 
+        else return Vector!(type, dimension_).init;
+    }
+    
+    /**
+        Right vector (1, 0, 0)
+    */
+    static auto right() {
+        static if (dimension_ == 2) return Vector!(type, dimension_)(cast(type)1, cast(type)0); 
+        else static if (dimension_ == 3) return Vector!(type, dimension_)(cast(type)1, cast(type)0, cast(type)0); 
+        else static if (dimension_ == 4) return Vector!(type, dimension_)(cast(type)1, cast(type)0, cast(type)0, cast(type)0);
+        else return Vector!(type, dimension_).init;
+    }
+
+    static if (dimension_ >= 3) {
+
+        /**
+            Forward vector (0, 0, 1)
+        */
+        static auto forward() {
+            static if (dimension_ == 3) return Vector!(type, dimension_)(cast(type)0, cast(type)0, cast(type)1); 
+            else static if (dimension_ == 4) return Vector!(type, dimension_)(cast(type)0, cast(type)0, cast(type)1, cast(type)0);
+            else return Vector!(type, dimension_).init;
+        }
+        
+        /**
+            Back vector (0, 0, -1)
+        */
+        static auto back() {
+            static if (dimension_ == 3) return Vector!(type, dimension_)(cast(type)0, cast(type)0, cast(type)-1); 
+            else static if (dimension_ == 4) return Vector!(type, dimension_)(cast(type)0, cast(type)0, cast(type)-1, cast(type)0); 
+            else return Vector!(type, dimension_).init;
+        }
+    }
+
     ///
     ref inout(vt) get_(char coord)() inout {
         return vector[coordToIndex!coord];
@@ -199,7 +275,6 @@ static assert(dimension > 0, "0 dimensional vectors don't exist.");
             return true;
         }
     }
-    deprecated("Use isFinite instead of ok") alias ok = isFinite;
 
     /// Sets all values of the vector to value.
     void clear(vt value) {
