@@ -4,7 +4,7 @@
     Authors: David Herberth, Inochi2D Project
     License: MIT
 */
-module inmath.lerpolate;
+module inmath.interpolate;
 
 private {
     import inmath.linalg : Vector, dot, vec2, vec3, vec4, quat;
