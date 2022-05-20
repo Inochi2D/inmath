@@ -2760,12 +2760,6 @@ struct Rect(type) {
         return vec2(this.x + (this.width/2), this.y + (this.height/2));
     }
 
-    @("rect center")
-    unittest {
-        RectT a = RectT(0, 0, 32, 32);
-        assert(a.center == vec2(16, 16));
-    }
-
     /**
         Gets whether this rect intersects another rect
     */
@@ -2778,22 +2772,6 @@ struct Rect(type) {
     */
     bool intersects(vtype)(vtype other) const if (isVector!vtype) {
         return !(other.x >= this.right || other.x <= this.left || other.y >= this.bottom || other.y <= this.top);
-    }
-
-    @("rect intersects")
-    unittest {
-        RectT a = RectT(0, 0, 32, 32);
-        RectT b = RectT(16, 16, 32, 32);
-        RectT c = RectT(0, 32, 32, 32);
-        vec2 p = vec2(8, 8);
-
-        assert(a.intersects(b));
-        assert(b.intersects(c));
-        assert(!a.intersects(c));
-        
-        assert(a.intersects(p));
-        assert(!b.intersects(p));
-        assert(!c.intersects(p));
     }
 
     /**
@@ -2827,7 +2805,41 @@ struct Rect(type) {
     RectT expanded(vtype)(vtype other) const if (isVector!vtype && vtype.dimension == 2) {
         return RectT(this.x-other.x, this.y-other.y, this.width+(other.x*2), this.height+(other.y*2));
     }
+
+    /**
+        Gets the UV coordinates of each corner and returns them as a vec4 of the rect's type
+    */
+    Vector!(rt, 4) uvs() const {
+        return Vector!(rt, 4)(this.left, this.top, this.right, this.bottom);
+    }
 }
 
 alias rect = Rect!(float);
 alias rectd = Rect!(double);
+
+@("rect intersects")
+unittest {
+    rect a = rect(0, 0, 32, 32);
+    rectd b = rectd(16, 16, 32, 32);
+    rect c = rect(0, 32, 32, 32);
+    vec2 p = vec2(8, 8);
+
+    assert(a.intersects(b));
+    assert(b.intersects(c));
+    assert(!a.intersects(c));
+    
+    assert(a.intersects(p));
+    assert(!b.intersects(p));
+    assert(!c.intersects(p));
+}
+
+@("rect uvs")
+unittest {
+    assert(rect(16, 16, 32, 64).uvs == vec4(16, 16, 16+32, 16+64));
+}
+
+@("rect center")
+unittest {
+    rect a = rect(0, 0, 32, 32);
+    assert(a.center == vec2(16, 16));
+}
