@@ -2769,8 +2769,6 @@ struct Rect(type) {
 
     /**
         Gets the dimensions of a rect
-
-        TODO: Implement dim type?
     */
     Vector!(rt, 2) dim() const {
         return Vector!(rt, 2)(this.width, this.height);
