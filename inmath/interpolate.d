@@ -152,3 +152,13 @@ T hermite(T)(T x, T tx, T y, T ty, float t) {
     float h4 = t^^3 - t^^2;
     return h1 * x + h3 * tx + h2 * y + h4 * ty;
 }
+
+/// Cubic interpolation
+T cubic(T)(T p0, T p1, T p2, T p3, float t) {
+    T a = -0.5 * p0 + 1.5 * p1 - 1.5 * p2 + 0.5 * p3;
+    T b = p0 - 2.5 * p1 + 2 * p2 - 0.5 * p3;
+    T c = -0.5 * p0 + 0.5 * p2;
+    T d = p1;
+    
+    return a * (t ^^ 3) + b * (t ^^ 2) + c * t + d;
+}
