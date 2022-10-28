@@ -17,6 +17,8 @@ inmath provides all the math you need to work with OpenGL. Currently inmath supp
   * spherical linear interpolation (slerp)
   * hermite interpolation
   * catmull rom interpolation
+* noise
+  * opensimplex2 noise generation
 * colors - hsv to rgb and rgb to hsv conversion
 * nearly all GLSL defined functions (according to spec 4.1)
 * the power of D, e.g. dynamic swizzling, templated types (vectors, matrices, quaternions), impressive constructors and more!
