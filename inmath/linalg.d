@@ -28,6 +28,7 @@ private {
     import std.algorithm : max, min, reduce;
     import inmath.math : clamp, PI, sqrt, sin, cos, acos, tan, asin, atan2, almostEqual;
     import inmath.util : isVector, isMatrix, isQuaternion, isRect, TupleRange;
+    import inteli.xmmintrin, inteli.types;
 }
 
 version(NoReciprocalMul) {
@@ -35,6 +36,21 @@ version(NoReciprocalMul) {
 } else {
     private enum rmul = true;
 }
+
+version(INMATH_SIMD) {
+    enum isSIMD128(int dimension, vt) = dimension <= 4 && is(vt == float);
+    enum isSIMD128i(int dimension, vt) = dimension <= 4 && (is(vt == int) || is(vt == uint));
+    enum isSIMD256(int dimension, vt) = dimension <= 4 && is(vt == double);
+
+    enum isSIMDf(int dimension, vt) = isSIMD128!(dimension, vt) || isSIMD256!(dimension, vt);
+} else {
+    enum isSIMD128(int dimension, vt) = false;
+    enum isSIMD128i(int dimension, vt) = false;
+    enum isSIMD256(int dimension, vt) = false;
+
+    enum isSIMDf(int dimension, vt) = false;
+}
+
 
 /// Base template for all vector-types.
 /// Params:
@@ -51,8 +67,26 @@ static assert(dimension > 0, "0 dimensional vectors don't exist.");
 
     alias vt = type; /// Holds the internal type of the vector.
     static const int dimension = dimension_; ///Holds the dimension of the vector.
+    
+    // SIMD type references
+    static if (isSIMD128!(dimension, vt)) {
+        alias mmvt = __m128;
+        static const(bool) isSIMD = true;
+    } else static if (isSIMD256!(dimension, vt)) {
+        alias mmvt = __m256;
+        static const(bool) isSIMD = true;
+    } else {
+        static const(bool) isSIMD = false;
+    }
 
-    vt[dimension] vector; /// Holds all coordinates, length conforms dimension.
+    union {
+        vt[dimension] vector; /// Holds all coordinates, length conforms dimension.
+        
+        // SIMD Types
+        static if (isSIMDf!(dimension, vt)) {
+            mmvt vectormm = mmvt(0, 0, 0, 0);
+        }
+    }
 
     /// Returns a pointer to the coordinates.
     auto ptr() const { return vector.ptr; }
@@ -534,8 +568,13 @@ static assert(dimension > 0, "0 dimensional vectors don't exist.");
     Vector opBinary(string op : "*")(vt r) const {
         Vector ret;
 
-        static foreach(index; TupleRange!(0, dimension)) {
-            ret.vector[index] = vector[index] * r;
+        // TODO: Add int/uint SIMD intrinsics
+        static if(isSIMDf!(dimension, vt) && is(r.vt == this.vt)) {
+            ret.vectormm = this.vectormm * mmvt(r, r, r, r);
+        } else {
+            static foreach(index; TupleRange!(0, dimension)) {
+                ret.vector[index] = vector[index] * r;
+            }
         }
 
         return ret;
@@ -544,8 +583,12 @@ static assert(dimension > 0, "0 dimensional vectors don't exist.");
     Vector opBinary(string op : "/")(vt r) const {
         Vector ret;
 
-        static foreach(index; TupleRange!(0, dimension)) {
-            ret.vector[index] = cast(vt)(vector[index] / r);
+        static if(isSIMDf!(dimension, vt) && is(r.vt == this.vt)) {
+            ret.vectormm = this.vectormm / r.vectormm;
+        } else {
+            static foreach(index; TupleRange!(0, dimension)) {
+                ret.vector[index] = cast(vt)(vector[index] / r);
+            }
         }
 
         return ret;
@@ -554,8 +597,13 @@ static assert(dimension > 0, "0 dimensional vectors don't exist.");
     Vector opBinary(string op)(Vector r) const if((op == "+") || (op == "-")) {
         Vector ret;
 
-        static foreach(index; TupleRange!(0, dimension)) {
-            ret.vector[index] = mixin("cast(vt)(vector[index]" ~ op ~ "r.vector[index])");
+        
+        static if(isSIMDf!(dimension, vt) && is(r.vt == this.vt)) {
+            ret.vectormm = mixin("this.vectormm" ~ op ~ "r.vectormm");
+        } else {
+            static foreach(index; TupleRange!(0, dimension)) {
+                ret.vector[index] = mixin("cast(vt)(vector[index]" ~ op ~ "r.vector[index])");
+            }
         }
 
         return ret;
@@ -564,8 +612,12 @@ static assert(dimension > 0, "0 dimensional vectors don't exist.");
     Vector opBinary(string op : "*")(Vector r) const {
         Vector ret;
 
-        static foreach(index; 0..dimension) {
-            ret.vector[index] = vector[index] * r.vector[index];
+        static if(isSIMDf!(dimension, vt) && is(r.vt == this.vt)) {
+            ret.vectormm = this.vectormm * r.vectormm;
+        } else {
+            static foreach(index; 0..dimension) {
+                ret.vector[index] = vector[index] * r.vector[index];
+            }
         }
 
         return ret;
@@ -576,9 +628,15 @@ static assert(dimension > 0, "0 dimensional vectors don't exist.");
         Vector!(vt, T.cols) ret;
         ret.clear(0);
 
-        foreach(c; TupleRange!(0, T.cols)) {
-            foreach(r; TupleRange!(0, T.rows)) {
-                ret.vector[c] += vector[r] * inp.matrix[r][c];
+        static if(ret.isSIMD && inp.isSIMD && T.mt == vt) {
+            foreach(c; TupleRange!(0, T.cols)) {
+                ret.vectormm = this.vectormm * inp.matrixmm[c];
+            }
+        } else {
+            foreach(c; TupleRange!(0, T.cols)) {
+                foreach(r; TupleRange!(0, T.rows)) {
+                    ret.vector[c] += vector[r] * inp.matrix[r][c];
+                }
             }
         }
 
@@ -748,9 +806,17 @@ static assert(dimension > 0, "0 dimensional vectors don't exist.");
 /// Calculates the product between two vectors.
 T.vt dot(T)(const T veca, const T vecb) @safe pure nothrow if(isVector!T) {
     T.vt temp = 0;
+    static if(isSIMDf!(T.dimension, T.vt)) {
 
-    foreach(index; TupleRange!(0, T.dimension)) {
-        temp += veca.vector[index] * vecb.vector[index];
+        // SEE multiply, then store result
+        T.mmvt result = veca.vectormm * vecb.vectormm;
+        static foreach(index; TupleRange!(0, T.dimension)) {
+            temp += result[index];
+        }
+    } else {
+        foreach(index; TupleRange!(0, T.dimension)) {
+            temp += veca.vector[index] * vecb.vector[index];
+        }
     }
 
     return temp;
@@ -758,9 +824,20 @@ T.vt dot(T)(const T veca, const T vecb) @safe pure nothrow if(isVector!T) {
 
 /// Calculates the cross product of two 3-dimensional vectors.
 T cross(T)(const T veca, const T vecb) @safe pure nothrow if(isVector!T && (T.dimension == 3)) {
-   return T(veca.y * vecb.z - vecb.y * veca.z,
-            veca.z * vecb.x - vecb.z * veca.x,
-            veca.x * vecb.y - vecb.x * veca.y);
+    static if(isSIMDf!(T.dimension, T.vt)) {
+        T.mmvt out_;
+
+        // veca.y * vecb.z, vecb.y * veca.z, veca.z * vecb.x, vecb.z * veca.x
+        T.mmvt res = T.mmvt(veca.y, vecb.y, veca.z, vecb.z) * T.mmvt(vecb.z, veca.z, vecb.x, veca.x);
+
+        // Calculate the last multiplication and then subtract in one go.
+        out_ = T.mmvt(res[0], res[2], veca.x * vecb.y, 0) - 
+               T.mmvt(res[1], res[3], vecb.x * veca.y, 0);
+        return T(out_[0], out_[1], out_[2]);
+    }
+    return T(veca.y * vecb.z - vecb.y * veca.z,
+             veca.z * vecb.x - vecb.z * veca.x,
+             veca.x * vecb.y - vecb.x * veca.y);
 }
 
 /// Calculates the distance between two vectors.
@@ -836,9 +913,29 @@ struct Matrix(type, int rows_, int cols_) if((rows_ > 0) && (cols_ > 0)) {
     alias mt = type; /// Holds the internal type of the matrix;
     static const int rows = rows_; /// Holds the number of rows;
     static const int cols = cols_; /// Holds the number of columns;
+    
+    static if (rows == cols && rows == 4) {
+        static if (is(mt == float)) {
+            alias mmmt = _m128;
+            static const(bool) isSIMD = true;
+        } else static if (is(mt == double)) {
+            alias mmmt = _m256;
+            static const(bool) isSIMD = true;
+        } else static const(bool) isSIMD = false;
+    } else {
+        
+        static const(bool) isSIMD = false;
+    }
 
     /// Holds the matrix $(RED row-major) in memory.
-    mt[cols][rows] matrix; // In C it would be mt[rows][cols], D does it like this: (mt[foo])[bar]
+    union {
+        mt[cols][rows] matrix; // In C it would be mt[rows][cols], D does it like this: (mt[foo])[bar]
+    
+        // SIMD Types
+        static if (isSIMD) {
+            mmmt[rows] matrixmm;
+        }
+    }
     alias matrix this;
 
     unittest {
