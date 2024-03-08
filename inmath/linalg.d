@@ -1308,6 +1308,12 @@ struct Matrix(type, int rows_, int cols_) if((rows_ > 0) && (cols_ > 0)) {
                 return perspective(cdata[0], cdata[1], cdata[2], cdata[3], cdata[4], cdata[5]);
             }
 
+            /// Returns a perspective matrix (4x4 and floating-point matrices only).
+            static Matrix perspective01(mt width, mt height, mt fov, mt near, mt far) {
+                mt[6] cdata = cperspective(-width, -height, -fov, near, far);
+                return perspective01(cdata[0], cdata[1], cdata[2], cdata[3], cdata[4], cdata[5]);
+            }
+
             /// ditto
             static Matrix perspective(mt left, mt right, mt bottom, mt top, mt near, mt far)
                 in {
@@ -1325,6 +1331,31 @@ struct Matrix(type, int rows_, int cols_) if((rows_ > 0) && (cols_ > 0)) {
                     ret.matrix[1][2] = (top+bottom)/(top-bottom);
                     ret.matrix[2][2] = -(far+near)/(far-near);
                     ret.matrix[2][3] = -(2*far*near)/(far-near);
+                    ret.matrix[3][2] = -1;
+
+                    return ret;
+                }
+
+
+
+            /// Returns an perspective matrix (4x4 and floating-point matrices only).
+            /// This matrix is made for Metal's NDC.
+            static Matrix perspective01(mt left, mt right, mt bottom, mt top, mt near, mt far)
+                in {
+                    assert(right-left != 0);
+                    assert(top-bottom != 0);
+                    assert(far-near != 0);
+                }
+                do {
+                    Matrix ret;
+                    ret.clear(0);
+
+                    ret.matrix[0][0] = (2*near)/(right-left);
+                    ret.matrix[0][2] = (right+left)/(right-left);
+                    ret.matrix[1][1] = (2*near)/(top-bottom);
+                    ret.matrix[1][2] = (top+bottom)/(top-bottom);
+                    ret.matrix[2][2] = -((far)/(far-near));
+                    ret.matrix[2][3] = -((far*near)/(far-near));
                     ret.matrix[3][2] = -1;
 
                     return ret;
@@ -1375,6 +1406,30 @@ struct Matrix(type, int rows_, int cols_) if((rows_ > 0) && (cols_ > 0)) {
                     ret.matrix[1][3] = -(top+bottom)/(top-bottom);
                     ret.matrix[2][2] = -2/(far-near);
                     ret.matrix[2][3] = -(far+near)/(far-near);
+                    ret.matrix[3][3] = 1;
+
+                    return ret;
+                }
+
+
+            /// Returns an orthographic matrix (4x4 and floating-point matrices only).
+            /// This matrix is made for Metal's NDC.
+            static Matrix orthographic01(mt left, mt right, mt bottom, mt top, mt near, mt far)
+                in {
+                    assert(right-left != 0);
+                    assert(top-bottom != 0);
+                    assert(far-near != 0);
+                }
+                do {
+                    Matrix ret;
+                    ret.clear(0);
+
+                    ret.matrix[0][0] = 2/(right-left);
+                    ret.matrix[0][3] = -(right+left)/(right-left);
+                    ret.matrix[1][1] = 2/(top-bottom);
+                    ret.matrix[1][3] = -(top+bottom)/(top-bottom);
+                    ret.matrix[2][2] = 1/(far-near);
+                    ret.matrix[2][3] = -1/(far-near);
                     ret.matrix[3][3] = 1;
 
                     return ret;
