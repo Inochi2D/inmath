@@ -51,7 +51,7 @@ T mod(T)(T x, T y) { // std.math.floor is not pure
     return x - y * floor(x/y);
 }
 
-@safe pure nothrow:
+@safe pure @nogc nothrow:
 
 extern (C) { float fmodf(float x, float y); }
 
