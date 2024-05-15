@@ -41,8 +41,11 @@ private {
     }
 }
 
+@nogc nothrow:
+
 /// PI / 180 at compiletime, used for degrees/radians conversion.
 public enum real PI_180 = PI / 180;
+
 /// 180 / PI at compiletime, used for degrees/radians conversion.
 public enum real _180_PI = 180 / PI;
 
@@ -51,7 +54,7 @@ T mod(T)(T x, T y) { // std.math.floor is not pure
     return x - y * floor(x/y);
 }
 
-@safe pure @nogc nothrow:
+@safe pure:
 
 extern (C) { float fmodf(float x, float y); }
 
