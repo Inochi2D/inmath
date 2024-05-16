@@ -2921,7 +2921,7 @@ struct Rect(type) {
     /**
         Displaces the rect by the specified amount
     */
-    void displace(vtype)(vtype other) const if (isVector!vtype && vtype.dimension == 2) {
+    void displace(vtype)(vtype other) if (isVector!vtype && vtype.dimension == 2) {
         this.x += other.x;
         this.y += other.y;
     }
@@ -2936,7 +2936,7 @@ struct Rect(type) {
     /**
         Expands the rect by the specified amount from the center
     */
-    void expand(vtype)(vtype other) const if (isVector!vtype && vtype.dimension == 2) {
+    void expand(vtype)(vtype other) if (isVector!vtype && vtype.dimension == 2) {
         this.x -= other.x;
         this.y -= other.y;
         this.width += other.x*2;
@@ -2946,7 +2946,7 @@ struct Rect(type) {
     /**
         Expands the rect by the specified amount from the corner
     */
-    void expandSize(vtype)(vtype other) const if (isVector!vtype && vtype.dimension == 2) {
+    void expandSize(vtype)(vtype other) if (isVector!vtype && vtype.dimension == 2) {
         this.width += other.x;
         this.height += other.y;
     }
