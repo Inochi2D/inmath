@@ -89,6 +89,15 @@ struct PlaneT(type = float) if(isFloatingPoint!type) {
         assert(p == pn);
     }
 
+    /**
+        Returns the distance constant
+    */
+    pragma(inline, true)
+    @property
+    pt distance() const {
+        return d;
+    }
+
     /// Returns the distance from a point to the plane.
     /// Note: the plane $(RED must) be normalized, the result can be negative.
     pt distance(vec3 point) const {
