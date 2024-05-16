@@ -30,6 +30,7 @@ inmath is slightly different from gl3n in the following ways
      * Multiplying vectors does pair-wise multiplication instead.
  * inmath uses camelCase for the naming of things
  * inmath simplifies parts of gl3n by removing excessive use of aliases.
+ * inmath is usable without the GC!
 
 License
 =======
