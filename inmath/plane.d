@@ -93,7 +93,6 @@ struct PlaneT(type = float) if(isFloatingPoint!type) {
         Returns the distance constant
     */
     pragma(inline, true)
-    @property
     pt distance() const {
         return d;
     }
