@@ -137,7 +137,7 @@ vec4 hex2rgba(const(char)[] input) {
 /**
     Parses a hex string to a RGBA color
 
-    Returns the color as 8 bit RGB(A)
+    Returns the color as a static 8 bit RGB(A) array.
 */
 ubyte[4] hex2rgbau(const(char)[] input) {
     import core.stdc.stdio : printf;
@@ -199,4 +199,27 @@ unittest {
     string col6 = "#FF";
     ubyte[4] col6u = [255, 0, 0, 0];
     assert(hex2rgbau(col6) == col6u);
+}
+
+/**
+    Returns RGBA color from 0..1 from colors in range 0..255
+*/
+vec4 rgbau2rgba(ubyte[4] colors) {
+    return vec4(
+        cast(float)colors[0]/255.0,
+        cast(float)colors[1]/255.0,
+        cast(float)colors[2]/255.0,
+        cast(float)colors[3]/255.0,
+    );
+}
+
+/**
+    Returns RGB color from 0..1 from colors in range 0..255
+*/
+vec3 rgbu2rgb(ubyte[3] colors) {
+    return vec3(
+        cast(float)colors[0]/255.0,
+        cast(float)colors[1]/255.0,
+        cast(float)colors[2]/255.0,
+    );
 }
