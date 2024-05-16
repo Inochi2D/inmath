@@ -7,6 +7,8 @@
 module inmath.noise.opensimplex;
 import inmath.math;
 
+// TODO: Make no-gc
+
 private {
     struct LatticePoint2D {
         int xsv, ysv;

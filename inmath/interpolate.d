@@ -13,7 +13,7 @@ private {
     import std.conv : to;
 }
 
-@safe pure nothrow:
+@safe pure nothrow @nogc:
 
 /// lerpolates linear between two points, also known as lerp.
 T lerp(T)(T a, T b, float t) {

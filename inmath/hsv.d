@@ -17,6 +17,8 @@ private {
     }
 }
 
+@nogc:
+
 /// Converts a 3 dimensional color-vector from the RGB to the HSV colorspace.
 /// The function assumes that each component is in the range [0, 1].
 @safe pure nothrow vec3 rgb2hsv(vec3 inp) {
