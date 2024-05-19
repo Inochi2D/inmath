@@ -2971,10 +2971,47 @@ struct Rect(type) {
     Vector!(rt, 4) uvs() const {
         return Vector!(rt, 4)(this.left, this.top, this.right, this.bottom);
     }
+
+    /**
+        Gets the result of clipping this rectangle against another rectangle.
+
+        A clip can only shrink, not grow.
+    */
+    RectT clipped(rtype)(rtype other) if (isRect!rtype) {
+
+        // Top Left
+        Vector!(rt, 2) tl = Vector!(rt, 2)(
+            other.left > this.left ? other.left : this.left,
+            other.top > this.top ? other.top : this.top,
+        );
+        
+        // Bottom Right
+        Vector!(rt, 2) br = Vector!(rt, 2)(
+            other.right < this.right ? other.right : this.right,
+            other.bottom < this.bottom ? other.bottom : this.bottom,
+        );
+
+        return RectT(
+            tl.x,
+            tl.y,
+            br.x-tl.x,
+            br.y-tl.y
+        );
+    }
+
+    /**
+        Clips this rectangle against another rectangle.
+
+        A clip can only shrink, not grow.
+    */
+    void clip(rtype)(rtype against) if (isRect!rtype) {
+        this = this.clipped(against);
+    }
 }
 
 alias rect = Rect!(float);
 alias rectd = Rect!(double);
+alias recti = Rect!(int);
 
 @("rect intersects")
 unittest {
@@ -3001,4 +3038,23 @@ unittest {
 unittest {
     rect a = rect(0, 0, 32, 32);
     assert(a.center == vec2(16, 16));
+}
+
+@("rect clipping")
+unittest {
+
+    // Inside clip
+    recti a = recti(0, 0, 128, 128);
+    recti b = recti(32, 32, 64, 64);
+    assert(a.clipped(b) == recti(32, 32, 64, 64));
+
+    // clip in corner
+    a = recti(0, 0, 128, 128);
+    b = recti(96, 96, 64, 64);
+    assert(a.clipped(b) == recti(96, 96, 32, 32));
+
+    // clip outside tl
+    a = recti(0, 0, 128, 128);
+    b = recti(-32, -32, 64, 64);
+    assert(a.clipped(b) == recti(0, 0, 32, 32));
 }
