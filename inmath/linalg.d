@@ -2227,13 +2227,11 @@ struct Quaternion(type) {
         y = -y;
         z = -z;
     }
-    alias conjugate = invert; /// ditto
 
     /// Returns an inverted copy of the current quaternion.
     Quaternion inverse() const {
         return Quaternion(w, -x, -y, -z);
     }
-    alias conjugated = inverse; /// ditto
 
     unittest {
         quat q1 = quat(1.0f, 1.0f, 1.0f, 1.0f);
