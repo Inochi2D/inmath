@@ -1,5 +1,5 @@
 name "inmath"
-description "Inochi2D Math Library (fork of gl3n)"
+description "Games math library for D"
 homepage "https://github.com/Inochi2D/inmath"
 authors "David Herberth" "Inochi2D Project"
 copyright "Copyright © 2011-2021, David Herberth, 2022 Inochi2D Project"

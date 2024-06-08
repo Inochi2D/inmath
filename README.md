@@ -1,41 +1,40 @@
-Inochi2D Math
+InMath
 ====
 
-inmath is a fork of [gl3n](https://github.com/Dav1dde/gl3n) meant for use within Inochi2D, containing modifications specific to Inochi2D.  
-inmath provides all the math you need to work with OpenGL. Currently inmath supports:
+InMath, forked from gl3n, is a mathematics library for D providing math functions useful for multimedia software.
 
-* linear algebra
-  * vectors
-  * matrices
-  * quaternions
-* geometry
-  * axis aligned bounding boxes
-  * planes
-  * frustum (use it with care, not a 100% tested)
-* interpolation
-  * linear interpolation (lerp)
-  * spherical linear interpolation (slerp)
-  * hermite interpolation
-  * catmull rom interpolation
-* noise
-  * opensimplex2 noise generation
-* colors - hsv to rgb and rgb to hsv conversion
-* nearly all GLSL defined functions (according to spec 4.1)
-* the power of D, e.g. dynamic swizzling, templated types (vectors, matrices, quaternions), impressive constructors and more!
+InMath provides all the math you need to work with OpenGL and Metal.
 
-inmath is slightly different from gl3n in the following ways
- * No unexpected side effects
-   * No unexpected casts
-   * Vector multiplication is _not_ dot product.
-     * Multiplying vectors does pair-wise multiplication instead.
- * inmath uses camelCase for the naming of things
- * inmath simplifies parts of gl3n by removing excessive use of aliases.
- * inmath is usable without the GC!
-
-License
-=======
-
-inmath, like gl3n is MIT licensed, which allows you to use it everywhere you want it.
+* Linear algebra
+    * Vectors
+    * Matrices
+        * Metal-compatible orthographic and projection matrix functions! (`perspective01`, `orthographic01`)
+    * Quaternions
+    * Rectangles
+    * AABBs
+    * Planes,
+    * Frustrums
+* Interpolation
+    * Linear interpolation (`lerp`)
+    * Spherical linear interpolation (`slerp`)
+    * Hermite interpolation
+    * Catmull rom interpolation
+    * Cubic interpolation
+* Dampening
+    * Basic distance based dampening (`dampen`)
+    * Dampened Harmonic Oscillator (`smoothDamp`)
+* Noise
+    * OpenSimplex2
+* Colors
+    * HSV<->RGB conversion
+    * Hexstring to RGB(A) conversion
+    * RGBA32<->RGBAF conversion
+* No unexpected side effects
+    * No unexpected casts
+    * Vector multiplication is _not_ dot product.
+    * InMath uses camelCase for the naming of things
+    * InMath simplifies parts of gl3n by removing excessive use of aliases.
+    * InMath is usable without the GC!
 
 Installation
 ============
