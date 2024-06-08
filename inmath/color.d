@@ -204,7 +204,7 @@ unittest {
 /**
     Returns RGBA color from 0..1 from colors in range 0..255
 */
-vec4 rgbau2rgba(ubyte[4] colors) {
+@safe pure nothrow vec4 rgbau2rgba(ubyte[4] colors) {
     return vec4(
         cast(float)colors[0]/255.0,
         cast(float)colors[1]/255.0,
@@ -216,7 +216,7 @@ vec4 rgbau2rgba(ubyte[4] colors) {
 /**
     Returns RGB color from 0..1 from colors in range 0..255
 */
-vec3 rgbu2rgb(ubyte[3] colors) {
+@safe pure nothrow vec3 rgbu2rgb(ubyte[3] colors) {
     return vec3(
         cast(float)colors[0]/255.0,
         cast(float)colors[1]/255.0,
@@ -227,7 +227,7 @@ vec3 rgbu2rgb(ubyte[3] colors) {
 /**
     Returns RGBA color from 0..255 from colors in range 0..1
 */
-ubyte[4] rgba2rgbau(vec4 colors) {
+@safe pure nothrow ubyte[4] rgba2rgbau(vec4 colors) {
     ubyte[4] color;
     static foreach(i; 0..4) {
         color[i] = cast(ubyte)(colors.vector[i]*255.0);
@@ -238,7 +238,7 @@ ubyte[4] rgba2rgbau(vec4 colors) {
 /**
     Returns RGB color from 0..255 from colors in range 0..1
 */
-ubyte[3] rgb2rgbu(vec3 colors) {
+@safe pure nothrow ubyte[3] rgb2rgbu(vec3 colors) {
     ubyte[3] color;
     static foreach(i; 0..3) {
         color[i] = cast(ubyte)(colors.vector[i]*255.0);
