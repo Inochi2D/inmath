@@ -223,3 +223,25 @@ vec3 rgbu2rgb(ubyte[3] colors) {
         cast(float)colors[2]/255.0,
     );
 }
+
+/**
+    Returns RGBA color from 0..255 from colors in range 0..1
+*/
+ubyte[4] rgba2rgbau(vec4 colors) {
+    ubyte[4] color;
+    static foreach(i; 0..4) {
+        color[i] = cast(ubyte)(colors.vector[i]*255.0);
+    }
+    return color;
+}
+
+/**
+    Returns RGB color from 0..255 from colors in range 0..1
+*/
+ubyte[3] rgb2rgbu(vec3 colors) {
+    ubyte[3] color;
+    static foreach(i; 0..3) {
+        color[i] = cast(ubyte)(colors.vector[i]*255.0);
+    }
+    return color;
+}
