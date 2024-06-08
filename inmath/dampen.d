@@ -13,7 +13,7 @@ import std.traits : isFloatingPoint;
 @safe pure nothrow @nogc:
 
 /**
-    Smoothly dampens movement from pos to target.
+    Smoothly dampens movement from `current` to `target`.
 
     This algorithm uses a simpler dampening formulae that doesn't take velocity in to account.
 */
@@ -44,7 +44,7 @@ V dampen(V, T)(V current, V target, T delta, T maxSpeed = 50) if(isVector!V && i
 }
 
 /**
-    Smoothly dampens movement from pos to target.
+    Smoothly dampens movement from `current` to `target`.
 
     This algorithm uses a simpler dampening formulae that doesn't take velocity in to account.
 */
@@ -76,7 +76,7 @@ T dampen(T)(T current, T target, T delta, T maxSpeed = 50) if(isFloatingPoint!T)
 }
 
 /**
-    Smoothly dampens movement from pos to target.
+    Smoothly dampens movement from `current` to `target`.
 
     This algorithm uses a critial damped harmonic oscillator to smooth values.
 */
@@ -121,7 +121,7 @@ V smoothDamp(V, T)(V current, V target, ref V currentVelocity, T smoothTime, T m
 }
 
 /**
-    Smoothly dampens movement from pos to target.
+    Smoothly dampens movement from `current` to `target`.
 
     This algorithm uses a critial damped harmonic oscillator to smooth values.
 */

@@ -12,3 +12,4 @@ public import inmath.linalg;
 public import inmath.math;
 public import inmath.util;
 public import inmath.interpolate;
+public import inmath.dampen;
