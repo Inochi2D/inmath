@@ -1,4 +1,3 @@
-
 /**
     inmath.frustum
 
