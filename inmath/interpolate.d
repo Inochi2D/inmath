@@ -15,12 +15,12 @@ private {
 
 @safe pure nothrow @nogc:
 
-/// lerpolates linear between two points, also known as lerp.
+/// Linearly interpolates between `a` and `b`, using scalar `t` from 0..1 
 T lerp(T)(T a, T b, float t) {
     return a * (1 - t) + b * t;
 }
 
-/// lerpolates spherical between to vectors or quaternions, also known as slerp.
+/// Linearly interpolates between to vectors or quaternions.
 T slerp(T)(T a, T b, float t) if(isVector!T || isQuaternion!T) {
     static if(isVector!T) {
         real theta = acos(dot(a, b));
@@ -42,7 +42,7 @@ T slerp(T)(T a, T b, float t) if(isVector!T || isQuaternion!T) {
 }
 
 
-/// Normalized quaternion linear lerpolation.
+/// Normalized quaternion linear interpolation.
 quat nlerp(quat a, quat b, float t) {
     // TODO: tests
     float dot = a.w * b.w + a.x * b.x + a.y * b.y + a.z * b.z;
@@ -115,7 +115,7 @@ unittest {
     assert(slerp(q1, q2, 1.0f).quaternion == q2.quaternion);
 }
 
-/// Nearest lerpolation of two points.
+/// Nearest interpolation of two points.
 T nearest(T)(T x, T y, float t) {
     if(t < 0.5f) { return x; }
     else { return y; } 
@@ -128,7 +128,7 @@ unittest {
     assert(nearest(0.0, 1.0, 0.6f) == 1.0);
 }
 
-/// Catmull-rom lerpolation between four points.
+/// Catmull-rom interpolation between four points.
 T catmullrom(T)(T p0, T p1, T p2, T p3, float t) {
     return 0.5f * ((2 * p1) + 
                    (-p0 + p2) * t +
@@ -136,7 +136,7 @@ T catmullrom(T)(T p0, T p1, T p2, T p3, float t) {
                    (-p0 + 3 * p1 - 3 * p2 + p3) * t^^3);
 }
 
-/// Catmull-derivatives of the lerpolation between four points.
+/// Catmull-derivatives of the interpolation between four points.
 T dcatmullrom(T)(T p0, T p1, T p2, T p3, float t) {
     return 0.5f * ((2 * p1) +
                    (-p0 + p2) +
@@ -144,7 +144,7 @@ T dcatmullrom(T)(T p0, T p1, T p2, T p3, float t) {
                    3 * (-p0 + 3 * p1 - 3 * p2 + p3) * t^^2);
 }
 
-/// Hermite lerpolation (cubic hermite spline).
+/// Hermite interpolation (cubic hermite spline).
 T hermite(T)(T x, T tx, T y, T ty, float t) {
     float h1 = 2 * t^^3 - 3 * t^^2 + 1;
     float h2 = -2* t^^3 + 3 * t^^2;
