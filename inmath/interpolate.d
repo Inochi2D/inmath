@@ -9,7 +9,7 @@ module inmath.interpolate;
 private {
     import inmath.linalg : Vector, dot, vec2, vec3, vec4, quat;
     import inmath.util : isVector, isQuaternion;
-    import inmath.math : almostEqual, acos, sin, sqrt, clamp, PI;
+    import inmath.math : almostEqual, acos, sin, sqrt, clamp, PI, exp, log;
     import std.conv : to;
 }
 
@@ -18,6 +18,12 @@ private {
 /// Linearly interpolates between `a` and `b`, using scalar `t` from 0..1 
 T lerp(T)(T a, T b, float t) {
     return a * (1 - t) + b * t;
+}
+
+/// Logarithmically interpolates between `a` and `b`, using scalar `t` from 0..1
+/// Also known as eerp
+T lorp(T)(T a, T b, float t) {
+    return a * exp( t * log(b / a));
 }
 
 /// Linearly interpolates between to vectors or quaternions.
