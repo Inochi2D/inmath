@@ -13,7 +13,7 @@ private {
     import std.conv : to;
 }
 
-@safe pure nothrow @nogc:
+@safe nothrow @nogc:
 
 /// Linearly interpolates between `a` and `b`, using scalar `t` from 0..1 
 T lerp(T)(T a, T b, float t) {
