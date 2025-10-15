@@ -1325,7 +1325,7 @@ struct Matrix(type, int rows_, int cols_) if((rows_ > 0) && (cols_ > 0)) {
                 mt zScale = far / (far - near);
                 
                 ret.matrix[0][0] = xScale;
-                ret.matrix[1][1] = yScale;
+                ret.matrix[1][1] = -yScale;
                 ret.matrix[2][2] = -zScale;
                 ret.matrix[2][3] = -near * zScale;
                 ret.matrix[3][2] = -1.0;
