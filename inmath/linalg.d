@@ -26,7 +26,7 @@ private {
     import std.string : format, rightJustify;
     import std.array : join;
     import std.algorithm : max, min, reduce;
-    import inmath.math : clamp, PI, sqrt, sin, cos, acos, tan, asin, atan2, almostEqual;
+    import inmath.math : clamp, PI, sqrt, sin, cos, acos, tan, asin, atan2, almostEqual, radians;
     import inmath.util : isVector, isMatrix, isQuaternion, isRect, TupleRange;
 }
 
@@ -1290,165 +1290,82 @@ struct Matrix(type, int rows_, int cols_) if((rows_ > 0) && (cols_ > 0)) {
         // (3) http://en.wikipedia.org/wiki/Orthographic_projection_(geometry)
 
         static if(isFloatingPoint!mt) {
-            static private mt[6] cperspective(mt width, mt height, mt fov, mt near, mt far)
-                in { assert(height != 0); }
-                do {
-                    mt aspect = width/height;
-                    mt top = near * tan(fov*(PI/360.0));
-                    mt bottom = -top;
-                    mt right = top * aspect;
-                    mt left = -right;
-
-                    return [left, right, bottom, top, near, far];
-                }
-
+            
             /// Returns a perspective matrix (4x4 and floating-point matrices only).
             static Matrix perspective(mt width, mt height, mt fov, mt near, mt far) {
-                mt[6] cdata = cperspective(width, height, fov, near, far);
-                return perspective(cdata[0], cdata[1], cdata[2], cdata[3], cdata[4], cdata[5]);
+                Matrix ret;
+                ret.clear(0);
+
+                mt aspect = width / height;
+                mt angle = radians(0.5 * fov);
+
+                mt yScale = 1.0 / tan(angle);
+                mt xScale = yScale / aspect;
+                mt zScale = far / (far - near);
+                
+                ret.matrix[0][0] = xScale;
+                ret.matrix[1][1] = yScale;
+                ret.matrix[2][2] = -(far+near) * zScale;
+                ret.matrix[2][3] = -(2*far*near) * zScale;
+                ret.matrix[3][2] = -1.0;
+
+                return ret;
             }
 
             /// Returns a perspective matrix (4x4 and floating-point matrices only).
             static Matrix perspective01(mt width, mt height, mt fov, mt near, mt far) {
-                mt[6] cdata = cperspective(-width, -height, -fov, near, far);
-                return perspective01(cdata[0], cdata[1], cdata[2], cdata[3], cdata[4], cdata[5]);
-            }
-
-            /// ditto
-            static Matrix perspective(mt left, mt right, mt bottom, mt top, mt near, mt far)
-                in {
-                    assert(right-left != 0);
-                    assert(top-bottom != 0);
-                    assert(far-near != 0);
-                }
-                do {
-                    Matrix ret;
-                    ret.clear(0);
-
-                    ret.matrix[0][0] = (2*near)/(right-left);
-                    ret.matrix[0][2] = (right+left)/(right-left);
-                    ret.matrix[1][1] = (2*near)/(top-bottom);
-                    ret.matrix[1][2] = (top+bottom)/(top-bottom);
-                    ret.matrix[2][2] = -(far+near)/(far-near);
-                    ret.matrix[2][3] = -(2*far*near)/(far-near);
-                    ret.matrix[3][2] = -1;
-
-                    return ret;
-                }
-
-
-
-            /// Returns an perspective matrix (4x4 and floating-point matrices only).
-            /// This matrix is made for Metal's NDC.
-            static Matrix perspective01(mt left, mt right, mt bottom, mt top, mt near, mt far)
-                in {
-                    assert(right-left != 0);
-                    assert(top-bottom != 0);
-                    assert(far-near != 0);
-                }
-                do {
-                    Matrix ret;
-                    ret.clear(0);
-
-                    ret.matrix[0][0] = (2*near)/(right-left);
-                    ret.matrix[0][2] = (right+left)/(right-left);
-                    ret.matrix[1][1] = (2*near)/(top-bottom);
-                    ret.matrix[1][2] = (top+bottom)/(top-bottom);
-                    ret.matrix[2][2] = -((far)/(far-near));
-                    ret.matrix[2][3] = -((far*near)/(far-near));
-                    ret.matrix[3][2] = -1;
-
-                    return ret;
-                }
-
-            /// Returns an inverse perspective matrix (4x4 and floating-point matrices only).
-            static Matrix persperctiveInverse(mt width, mt height, mt fov, mt near, mt far) {
-                mt[6] cdata = cperspective(width, height, fov, near, far);
-                return persperctiveInverse(cdata[0], cdata[1], cdata[2], cdata[3], cdata[4], cdata[5]);
-            }
-
-            /// ditto
-            static Matrix persperctiveInverse(mt left, mt right, mt bottom, mt top, mt near, mt far)
-                in {
-                    assert(near != 0);
-                    assert(far != 0);
-                }
-                do {
-                    Matrix ret;
-                    ret.clear(0);
-
-                    ret.matrix[0][0] = (right-left)/(2*near);
-                    ret.matrix[0][3] = (right+left)/(2*near);
-                    ret.matrix[1][1] = (top-bottom)/(2*near);
-                    ret.matrix[1][3] = (top+bottom)/(2*near);
-                    ret.matrix[2][3] = -1;
-                    ret.matrix[3][2] = -(far-near)/(2*far*near);
-                    ret.matrix[3][3] = (far+near)/(2*far*near);
-
-                    return ret;
-                }
-
-            // (2) and (3) say this one is correct
-            /// Returns an orthographic matrix (4x4 and floating-point matrices only).
-            static Matrix orthographic(mt left, mt right, mt bottom, mt top, mt near, mt far)
-                in {
-                    assert(right-left != 0);
-                    assert(top-bottom != 0);
-                    assert(far-near != 0);
-                }
-                do {
-                    Matrix ret;
-                    ret.clear(0);
-
-                    ret.matrix[0][0] = 2/(right-left);
-                    ret.matrix[0][3] = -(right+left)/(right-left);
-                    ret.matrix[1][1] = 2/(top-bottom);
-                    ret.matrix[1][3] = -(top+bottom)/(top-bottom);
-                    ret.matrix[2][2] = -2/(far-near);
-                    ret.matrix[2][3] = -(far+near)/(far-near);
-                    ret.matrix[3][3] = 1;
-
-                    return ret;
-                }
-
-
-            /// Returns an orthographic matrix (4x4 and floating-point matrices only).
-            /// This matrix is made for Metal's NDC.
-            static Matrix orthographic01(mt left, mt right, mt bottom, mt top, mt near, mt far)
-                in {
-                    assert(right-left != 0);
-                    assert(top-bottom != 0);
-                    assert(far-near != 0);
-                }
-                do {
-                    Matrix ret;
-                    ret.clear(0);
-
-                    ret.matrix[0][0] = 2/(right-left);
-                    ret.matrix[0][3] = -(right+left)/(right-left);
-                    ret.matrix[1][1] = 2/(top-bottom);
-                    ret.matrix[1][3] = -(top+bottom)/(top-bottom);
-                    ret.matrix[2][2] = 1/(far-near);
-                    ret.matrix[2][3] = -1/(far-near);
-                    ret.matrix[3][3] = 1;
-
-                    return ret;
-                }
-
-            // (1) and (2) say this one is correct
-            /// Returns an inverse ortographic matrix (4x4 and floating-point matrices only).
-            static Matrix orthographicInverse(mt left, mt right, mt bottom, mt top, mt near, mt far) {
                 Matrix ret;
                 ret.clear(0);
 
-                ret.matrix[0][0] = (right-left)/2;
-                ret.matrix[0][3] = (right+left)/2;
-                ret.matrix[1][1] = (top-bottom)/2;
-                ret.matrix[1][3] = (top+bottom)/2;
-                ret.matrix[2][2] = (far-near)/-2;
-                ret.matrix[2][3] = (far+near)/2;
+                mt aspect = width / height;
+                mt angle = radians(0.5 * fov);
+
+                mt yScale = 1.0 / tan(angle);
+                mt xScale = yScale / aspect;
+                mt zScale = far / (far - near);
+                
+                ret.matrix[0][0] = xScale;
+                ret.matrix[1][1] = yScale;
+                ret.matrix[2][2] = -zScale;
+                ret.matrix[2][3] = -near * zScale;
+                ret.matrix[3][2] = -1.0;
+
+                return ret;
+            }
+
+            // (2) and (3) say this one is correct
+            /// Returns an orthographic matrix (4x4 and floating-point matrices only).
+            static Matrix orthographic(mt left, mt right, mt bottom, mt top, mt near, mt far) {
+                Matrix ret;
+                ret.clear(0);
+
+                ret.matrix[0][0] = 2.0 / (right-left);
+                ret.matrix[0][3] = -(right+left)/(right-left);
+                ret.matrix[1][1] = 2.0 / (top-bottom);
+                ret.matrix[1][3] = -(top+bottom)/(top-bottom);
+                ret.matrix[2][2] = -2.0 / (far - near);
+                ret.matrix[2][3] = -(far+near)/(far-near);
                 ret.matrix[3][3] = 1;
 
+                return ret;
+            }
+
+
+            /// Returns an orthographic matrix (4x4 and floating-point matrices only).
+            /// This matrix is made for Metal's NDC.
+            static Matrix orthographic01(mt left, mt right, mt bottom, mt top, mt near, mt far) {
+                Matrix ret;
+                ret.clear(0);
+
+                mt sLength = 1.0 / (right - left);
+                mt sHeight = 1.0 / (top   - bottom);
+                mt sDepth  = 1.0 / (far   - near);
+                
+                ret.matrix[0][0] = 2.0 * sLength;
+                ret.matrix[1][1] = 2.0 * sHeight;
+                ret.matrix[2][2] = -sDepth;
+                ret.matrix[2][3] = -near * sDepth;
+                ret.matrix[3][3] = 1;
                 return ret;
             }
 
